@@ -7,7 +7,7 @@
   --shadow:0 1px 2px rgba(20,35,29,.06), 0 8px 24px rgba(20,35,29,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-#app{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 84px;position:relative;-webkit-font-smoothing:antialiased}
+#app{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 22px 60px;position:relative;-webkit-font-smoothing:antialiased}
 .osw{font-family:'Oswald',sans-serif}.tnum{font-variant-numeric:tabular-nums}
 .hdr{position:sticky;top:0;z-index:30;background:var(--pine);color:#F4F1E9;padding:18px 20px 16px;border-bottom-left-radius:22px;border-bottom-right-radius:22px}
 .hdr .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;font-weight:600}
@@ -49,13 +49,13 @@
 .wkhead2.first{margin-top:4px}
 .wkhead2 .w2{font-family:'Oswald';font-size:16px;font-weight:600;display:flex;align-items:center}
 .wkhead2 .rng{font-size:12px;color:var(--muted)}
-.calwrap{overflow-x:auto;margin:0 -4px;padding:0 4px 8px;-webkit-overflow-scrolling:touch}
-.calgrid{display:grid;gap:5px;align-items:stretch}
+.calwrap{overflow-x:auto;margin:0 -16px;padding:0 6px 8px;-webkit-overflow-scrolling:touch}
+.calgrid{display:grid;gap:4px;align-items:stretch}
 .calhd-day{display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:2px}
 .calhd-day.we{color:#B6713A}
 .calwk{display:flex;align-items:center;justify-content:center;gap:2px;font-family:'Oswald';font-size:13px;font-weight:600;color:var(--pine)}
 .calwk .tp{background:#F3E6CF;color:#9A6B12;border-radius:99px;padding:0 3px;font-size:8.5px;font-family:'Inter',sans-serif;font-weight:700}
-.cell{background:var(--card);border:1px solid var(--line);border-top-width:3px;border-radius:9px;padding:4px 5px 6px;min-height:70px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:1px;transition:.12s;overflow:hidden}
+.cell{background:var(--card);border:1px solid var(--line);border-top-width:3px;border-radius:9px;padding:4px 4px 6px;min-height:70px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:1px;transition:.12s;overflow:hidden}
 .cell:active{transform:scale(.97)}
 .cell.rest{background:#FBFAF6}
 .cell.today-c{outline:2px solid var(--pine);outline-offset:0}
@@ -134,14 +134,15 @@
 .tips h3{font-family:'Oswald';font-size:14px;letter-spacing:.04em;margin-bottom:8px;color:var(--pine)}
 .tips li{font-size:12.5px;color:#33453C;line-height:1.5;margin-bottom:9px;list-style:none;padding-left:18px;position:relative}
 .tips li::before{content:'';position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:99px;background:var(--pine)}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:40;padding:6px 8px 10px}
-.nav button{flex:1;background:none;border:none;cursor:pointer;color:var(--muted);padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit}
-.nav button.on{color:var(--pine)}
+.nav{position:fixed;top:0;bottom:0;left:0;width:60px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:6px;z-index:40;padding:12px 4px}
+.nav button{background:none;border:none;cursor:pointer;color:var(--muted);padding:9px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;border-radius:13px}
+.nav button.on{color:var(--pine);background:var(--pine-soft)}
 .nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.nav button span{font-size:10.5px;font-weight:600;letter-spacing:.02em}
+.nav button span{font-size:9.5px;font-weight:600;letter-spacing:.01em}
+@media(min-width:521px){.nav{left:calc(50% - 260px)}}
 .scrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:50;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{background:var(--paper);width:100%;max-width:520px;border-top-left-radius:22px;border-top-right-radius:22px;padding:8px 20px 28px;transform:translateY(20px);transition:.25s}
+.sheet{background:var(--paper);width:100%;max-width:520px;border-top-left-radius:22px;border-top-right-radius:22px;padding:8px 20px 28px 24px;transform:translateY(20px);transition:.25s}
 .scrim.on .sheet{transform:translateY(0)}
 .grab{width:40px;height:4px;border-radius:99px;background:var(--line);margin:8px auto 14px}
 .sheet .dtag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
@@ -425,7 +426,7 @@ function renderMonth(mi){
   const list=document.getElementById('dayList');list.innerHTML='';
   const wrap=document.createElement('div');wrap.className='calwrap';
   const grid=document.createElement('div');grid.className='calgrid';
-  grid.style.gridTemplateColumns='30px repeat(7,minmax(40px,1fr))';
+  grid.style.gridTemplateColumns='28px repeat(7,minmax(36px,1fr))';
   grid.appendChild(document.createElement('div')); // corner
   for(let di=0;di<7;di++){const h=document.createElement('div');h.className='calhd-day'+((di>=5)?' we':'');h.textContent=DOW[di];grid.appendChild(h);}
   ws.forEach(wi=>{
@@ -442,7 +443,7 @@ function renderMonth(mi){
 let sheetCtx=null,addType=null;
 function openSheet(wi,di){
   const d=effDay(wi,di);
-  if(d.t==='rest')renderAddSheet(wi,di);else renderDetailSheet(wi,di,d);
+  if(d.t==='rest')renderFormSheet(wi,di,false);else renderDetailSheet(wi,di,d);
   document.getElementById('scrim').classList.add('on');
 }
 function closeSheet(){document.getElementById('scrim').classList.remove('on');renderAll();}
@@ -465,35 +466,42 @@ function renderDetailSheet(wi,di,d){
     ${commentBlock(id)}
     <button class="donebtn ${done[id]?'is-done':''}" id="dbtn">${done[id]?'✓ Fullført – angre':'Marker som fullført'}</button>
     <div class="linkbtns">
+      <button class="resetbtn" id="editBtn">Endre økt</button>
       <button class="delbtn" id="delBtn">Slett økt</button>
-      ${(overrides[id]&&baseHad)?'<button class="resetbtn" id="resetBtn">Tilbakestill original</button>':''}
-    </div>`;
+    </div>
+    ${(overrides[id]&&baseHad)?'<div class="linkbtns" style="margin-top:10px"><button class="resetbtn" id="resetBtn">Tilbakestill original</button></div>':''}`;
   bindComment(id);
   document.getElementById('dbtn').onclick=()=>{toggle(id);closeSheet();};
+  document.getElementById('editBtn').onclick=()=>renderFormSheet(wi,di,true);
   document.getElementById('delBtn').onclick=()=>{deleteDay(wi,di);closeSheet();};
   const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
 }
 
-function renderAddSheet(wi,di){
+function renderFormSheet(wi,di,isEdit){
   const w=WEEKS[wi];const dt=dayDate(wi,di);const id=sid(w.n,di);
-  const baseHad=baseDay(wi,di).t!=='rest';addType=null;
+  const base=effDay(wi,di);const baseHad=baseDay(wi,di).t!=='rest';
+  addType=isEdit?base.t:null;
   const types=['rolig','mod','long','thr','vo2'];
-  const btns=types.map(t=>`<button class="typebtn" data-t="${t}"><span class="dot" style="background:${COLORS[t]}"></span>${PRESET[t].label}</button>`).join('');
+  const btns=types.map(t=>`<button class="typebtn${(isEdit&&t===base.t)?' sel':''}" data-t="${t}"><span class="dot" style="background:${COLORS[t]}"></span>${PRESET[t].label}</button>`).join('');
   document.getElementById('sheet').innerHTML=`<div class="grab"></div>
     <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}</div>
-    <h2>Legg til økt</h2>
+    <h2>${isEdit?'Endre økt':'Legg til økt'}</h2>
     <div class="field"><label>Type økt</label><div class="typegrid" id="typeGrid">${btns}</div></div>
-    <div class="field"><label>Varighet / innhold</label><input id="addDur" placeholder="f.eks. 8K eller 5×5 min, 1 min pause"></div>
+    <div class="field"><label>Varighet / innhold</label><input id="addDur" placeholder="f.eks. 8K eller 5×5 min, 1 min pause" value="${isEdit?esc(base.d):''}"></div>
     ${commentBlock(id)}
-    <button class="addbtn" id="addBtn" disabled>Legg til økt</button>
-    ${baseHad?'<div class="linkbtns"><button class="resetbtn" id="restoreBtn">Gjenopprett original økt</button></div>':''}`;
+    <button class="addbtn" id="addBtn"${isEdit?'':' disabled'}>${isEdit?'Lagre endringer':'Legg til økt'}</button>
+    ${(isEdit||baseHad)?'<div class="linkbtns" style="margin-top:10px">'+(isEdit?'<button class="delbtn" id="delBtn2">Slett økt</button>':'')+(baseHad?'<button class="resetbtn" id="restoreBtn">'+(isEdit?'Tilbakestill original':'Gjenopprett original')+'</button>':'')+'</div>':''}`;
   bindComment(id);
   document.querySelectorAll('#typeGrid .typebtn').forEach(b=>{b.onclick=()=>{addType=b.dataset.t;document.querySelectorAll('#typeGrid .typebtn').forEach(x=>x.classList.toggle('sel',x===b));document.getElementById('addBtn').disabled=false;};});
   document.getElementById('addBtn').onclick=()=>{
-    if(!addType)return;const p=PRESET[addType];
-    overrides[id]={t:addType,d:document.getElementById('addDur').value.trim(),lo:p.lo,hi:p.hi,pre:p.pre,post:'',custom:true};
-    save('vilde-hm-overrides',overrides);closeSheet();
+    if(!addType)return;let lo,hi,pre,post,fixed;
+    if(isEdit&&addType===base.t){lo=base.lo;hi=base.hi;pre=base.pre||'';post=base.post||'';fixed=base.fixed;}
+    else{const p=PRESET[addType];lo=p.lo;hi=p.hi;pre=p.pre;post='';}
+    const o={t:addType,d:document.getElementById('addDur').value.trim(),lo,hi,pre,post,custom:true};
+    if(fixed)o.fixed=fixed;
+    overrides[id]=o;save('vilde-hm-overrides',overrides);closeSheet();
   };
+  const db=document.getElementById('delBtn2');if(db)db.onclick=()=>{deleteDay(wi,di);closeSheet();};
   const rb=document.getElementById('restoreBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
 }
 
