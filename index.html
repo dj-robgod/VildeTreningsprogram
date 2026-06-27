@@ -1,47 +1,15 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
-
 :root{
-  --paper:#F4F1E9;
-  --ink:#16231D;
-  --muted:#5C6A62;
-  --pine:#1C4A38;
-  --pine-soft:#E4ECE6;
-  --card:#FFFFFF;
-  --line:#E2DED2;
-  /* effort spectrum */
-  --e-rest:#9AA59E;
-  --e-rolig:#2E9BB5;
-  --e-mod:#3FA65A;
-  --e-long:#7AA13A;
-  --e-thr:#E09418;
-  --e-vo2:#DE5B27;
-  --e-race:#C42E2E;
+  --paper:#F4F1E9;--ink:#16231D;--muted:#5C6A62;--pine:#1C4A38;--pine-soft:#E4ECE6;
+  --card:#FFFFFF;--line:#E2DED2;--danger:#B23A2E;
+  --e-rest:#9AA59E;--e-rolig:#2E9BB5;--e-mod:#3FA65A;--e-long:#7AA13A;--e-thr:#E09418;--e-vo2:#DE5B27;--e-race:#C42E2E;
   --shadow:0 1px 2px rgba(20,35,29,.06), 0 8px 24px rgba(20,35,29,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-#app{
-  font-family:'Inter',system-ui,sans-serif;
-  color:var(--ink);
-  background:var(--paper);
-  min-height:100vh;
-  max-width:520px;
-  margin:0 auto;
-  padding:0 0 84px;
-  position:relative;
-  -webkit-font-smoothing:antialiased;
-}
-.osw{font-family:'Oswald',sans-serif}
-.tnum{font-variant-numeric:tabular-nums}
-
-/* ---- header ---- */
-.hdr{
-  position:sticky;top:0;z-index:30;
-  background:var(--pine);
-  color:#F4F1E9;
-  padding:18px 20px 16px;
-  border-bottom-left-radius:22px;border-bottom-right-radius:22px;
-}
+#app{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 84px;position:relative;-webkit-font-smoothing:antialiased}
+.osw{font-family:'Oswald',sans-serif}.tnum{font-variant-numeric:tabular-nums}
+.hdr{position:sticky;top:0;z-index:30;background:var(--pine);color:#F4F1E9;padding:18px 20px 16px;border-bottom-left-radius:22px;border-bottom-right-radius:22px}
 .hdr .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;font-weight:600}
 .hdr h1{font-family:'Oswald';font-weight:600;font-size:25px;line-height:1.05;margin-top:3px;letter-spacing:.01em}
 .hdr .meta{display:flex;gap:18px;margin-top:14px}
@@ -51,28 +19,20 @@
 .prog-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#2E9BB5,#7AA13A,#E09418);border-radius:99px;transition:width .4s ease}
 .prog-txt{font-size:10.5px;opacity:.75;margin-top:6px;letter-spacing:.04em}
-
-/* ---- views ---- */
-.view{padding:18px 16px 8px;display:none}
-.view.on{display:block}
-
-/* ---- today hero ---- */
-.today{
-  background:var(--card);border-radius:18px;box-shadow:var(--shadow);
-  padding:16px 16px 16px 0;display:flex;overflow:hidden;margin-bottom:18px;
-  border:1px solid var(--line);
-}
+.view{padding:14px 16px 8px;display:none}.view.on{display:block}
+.tempobar{display:flex;align-items:center;gap:8px;background:var(--pine-soft);border:1px solid #D2DED7;border-radius:12px;padding:9px 13px;margin-bottom:14px;cursor:pointer;font-size:12.5px;color:#33453C}
+.tempobar svg{width:15px;height:15px;stroke:var(--pine);fill:none;stroke-width:2;flex:none}
+.tempobar b{font-family:'Oswald';color:var(--pine);font-size:14px}
+.tempobar .edit{margin-left:auto;font-size:11px;color:var(--pine);font-weight:600;text-decoration:underline}
+.today{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px 16px 16px 0;display:flex;overflow:hidden;margin-bottom:18px;border:1px solid var(--line)}
 .today .rail{width:6px;border-radius:99px;margin:0 16px;flex:none}
 .today .body{flex:1}
 .today .tag{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .today h2{font-family:'Oswald';font-size:23px;font-weight:600;margin:2px 0 2px;line-height:1.05}
 .today .sub{font-size:14px;color:var(--ink)}
 .today .pace{font-size:13px;color:var(--muted);margin-top:3px}
-
 .secttl{font-family:'Oswald';font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:4px 2px 12px;display:flex;align-items:center;gap:10px}
 .secttl::after{content:'';flex:1;height:1px;background:var(--line)}
-
-/* ---- week switcher ---- */
 .weeknav{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
 .weeknav::-webkit-scrollbar{display:none}
 .wpill{flex:none;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:7px 12px;cursor:pointer;text-align:center;min-width:54px;transition:.15s}
@@ -81,31 +41,28 @@
 .wpill.sel{background:var(--pine);border-color:var(--pine);color:#fff}
 .wpill.sel .wd{color:rgba(255,255,255,.7)}
 .wpill.taper{border-style:dashed}
-
 .weekhead{display:flex;justify-content:space-between;align-items:baseline;margin:14px 2px 12px}
 .weekhead .wk{font-family:'Oswald';font-size:20px;font-weight:600}
 .weekhead .rng{font-size:12px;color:var(--muted)}
 .taperbadge{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;background:#F3E6CF;color:#9A6B12;padding:3px 8px;border-radius:99px;font-weight:700;margin-left:8px}
-
-/* ---- day cards ---- */
-.day{
-  display:flex;align-items:stretch;gap:0;background:var(--card);border:1px solid var(--line);
-  border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,35,29,.04);
-}
+.day{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,35,29,.04)}
 .day.today-row{outline:2px solid var(--pine);outline-offset:0}
 .day .rail{width:5px;flex:none}
 .day .date{width:50px;flex:none;text-align:center;padding:11px 0;border-right:1px solid var(--line)}
 .day .date .dow{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .day .date .dnum{font-family:'Oswald';font-size:19px;font-weight:600;line-height:1.05}
-.day .main{flex:1;padding:9px 12px;cursor:pointer}
+.day .main{flex:1;padding:9px 12px;cursor:pointer;min-width:0}
 .day .ttl{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}
 .day .dot{width:8px;height:8px;border-radius:99px;flex:none}
+.day .tagx{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--pine-soft);color:var(--pine);padding:2px 6px;border-radius:99px;font-weight:700}
 .day .det{font-size:12.5px;color:var(--ink);margin-top:2px}
 .day .pc{font-size:11.5px;color:var(--muted);margin-top:1px}
+.day .cmt{font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;display:flex;gap:5px;align-items:flex-start}
+.day .cmt svg{width:12px;height:12px;stroke:var(--muted);fill:none;stroke-width:2;flex:none;margin-top:1px}
+.day .cmt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .day.rest .ttl{color:var(--muted);font-weight:500}
-.day .chk{
-  width:46px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border-left:1px solid var(--line);
-}
+.day.rest .addhint{font-size:11px;color:var(--pine);margin-top:2px;opacity:.8}
+.day .chk{width:46px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border-left:1px solid var(--line)}
 .day.rest .chk{opacity:.25;pointer-events:none}
 .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;transition:.15s}
 .day.done .box{background:var(--pine);border-color:var(--pine)}
@@ -113,25 +70,23 @@
 .day.done .box svg{opacity:1}
 .day.done .main{opacity:.55}
 .day.done .ttl{text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}
-
 .race .main{background:linear-gradient(100deg,#fff,#FBEDEA)}
 .race .ttl{color:var(--e-race)}
-
-/* ---- calculator ---- */
 .calc-in{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:18px}
 .calc-in .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
 .timepick{display:flex;align-items:flex-end;gap:8px;justify-content:center}
 .tcol{text-align:center}
-.tcol input{
-  width:64px;font-family:'Oswald';font-size:34px;font-weight:600;text-align:center;border:none;border-bottom:2px solid var(--line);
-  background:transparent;color:var(--ink);padding:2px 0;-moz-appearance:textfield;
-}
+.tcol input{width:64px;font-family:'Oswald';font-size:34px;font-weight:600;text-align:center;border:none;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);padding:2px 0;-moz-appearance:textfield}
 .tcol input:focus{outline:none;border-color:var(--pine)}
 .tcol input::-webkit-outer-spin-button,.tcol input::-webkit-inner-spin-button{-webkit-appearance:none}
 .tcol .u{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .colon{font-family:'Oswald';font-size:30px;font-weight:600;color:var(--line);padding-bottom:16px}
 .calc-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px}
-
+.saverow{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:12px;font-size:11.5px;color:var(--pine);font-weight:600;opacity:0;transition:.3s;height:0;overflow:hidden}
+.saverow.show{opacity:1;height:auto;margin-top:12px}
+.saverow svg{width:14px;height:14px;stroke:var(--pine);fill:none;stroke-width:2.5}
+.warnrow{display:none;text-align:center;margin-top:12px;font-size:12px;color:var(--danger);font-weight:600}
+.warnrow.show{display:block}
 .zrow{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 14px;margin-bottom:7px;gap:12px}
 .zrow .rail{width:5px;align-self:stretch;border-radius:99px;flex:none;margin:-2px 0}
 .zrow .znm{flex:1}
@@ -140,8 +95,6 @@
 .zrow .zv{text-align:right;font-family:'Oswald';line-height:1.1}
 .zrow .zv .big{font-size:18px;font-weight:600}
 .zrow .zv .small{font-size:11px;color:var(--muted);letter-spacing:.02em}
-
-/* ---- guide ---- */
 .gcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:9px;box-shadow:0 1px 2px rgba(20,35,29,.04)}
 .gcard .gh{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
 .gcard .gh .dot{width:9px;height:9px;border-radius:99px}
@@ -151,35 +104,42 @@
 .tips h3{font-family:'Oswald';font-size:14px;letter-spacing:.04em;margin-bottom:8px;color:var(--pine)}
 .tips li{font-size:12.5px;color:#33453C;line-height:1.5;margin-bottom:9px;list-style:none;padding-left:18px;position:relative}
 .tips li::before{content:'';position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:99px;background:var(--pine)}
-
-/* ---- bottom nav ---- */
-.nav{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
-  background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);
-  display:flex;z-index:40;padding:6px 8px 10px;
-}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:40;padding:6px 8px 10px}
 .nav button{flex:1;background:none;border:none;cursor:pointer;color:var(--muted);padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit}
 .nav button.on{color:var(--pine)}
 .nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav button span{font-size:10.5px;font-weight:600;letter-spacing:.02em}
-
-/* ---- detail sheet ---- */
-.scrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:50;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-end;justify-content:center}
+.scrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:50;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto}
 .scrim.on{opacity:1;pointer-events:auto}
 .sheet{background:var(--paper);width:100%;max-width:520px;border-top-left-radius:22px;border-top-right-radius:22px;padding:8px 20px 28px;transform:translateY(20px);transition:.25s}
 .scrim.on .sheet{transform:translateY(0)}
 .grab{width:40px;height:4px;border-radius:99px;background:var(--line);margin:8px auto 14px}
-.sheet .dtag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sheet .dtag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+.sheet .dtag .x{background:var(--pine-soft);color:var(--pine);padding:2px 7px;border-radius:99px;font-size:9px}
 .sheet h2{font-family:'Oswald';font-size:26px;font-weight:600;margin:2px 0 2px;display:flex;align-items:center;gap:10px}
 .sheet h2 .dot{width:12px;height:12px;border-radius:99px}
-.sheet .when{font-size:13px;color:var(--muted);margin-bottom:14px}
-.dgrid{display:flex;gap:10px;margin-bottom:16px}
+.dgrid{display:flex;gap:10px;margin:14px 0 16px}
 .dbox{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
 .dbox .l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.dbox .v{font-family:'Oswald';font-size:17px;font-weight:600;margin-top:3px}
+.dbox .v{font-family:'Oswald';font-size:17px;font-weight:600;margin-top:3px;line-height:1.15}
 .sheet .expl{font-size:13.5px;color:#33453C;line-height:1.55;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+.field{margin-top:16px}
+.field label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--pine)}
+.field textarea{min-height:64px}
+.typegrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.typebtn{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--card);border-radius:11px;padding:10px 12px;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink)}
+.typebtn .dot{width:10px;height:10px;border-radius:99px;flex:none}
+.typebtn.sel{border-color:var(--pine);background:var(--pine-soft)}
 .donebtn{width:100%;margin-top:16px;border:none;border-radius:13px;padding:14px;font-family:'Oswald';font-weight:600;font-size:15px;letter-spacing:.04em;cursor:pointer;color:#fff;background:var(--pine);transition:.15s}
 .donebtn.is-done{background:#fff;color:var(--pine);border:2px solid var(--pine);padding:12px}
+.addbtn{width:100%;margin-top:18px;border:none;border-radius:13px;padding:14px;font-family:'Oswald';font-weight:600;font-size:15px;letter-spacing:.04em;cursor:pointer;color:#fff;background:var(--pine)}
+.addbtn:disabled{opacity:.4}
+.linkbtns{display:flex;gap:10px;margin-top:12px}
+.delbtn,.resetbtn{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.delbtn{color:var(--danger);border-color:#E8CFC9}
+.resetbtn{color:var(--pine)}
 </style>
 
 <div id="app">
@@ -188,7 +148,7 @@
     <h1>Vilde → Trondheim Maraton</h1>
     <div class="meta">
       <div class="stat"><div class="n tnum" id="countdown">–</div><div class="l">dager igjen</div></div>
-      <div class="stat"><div class="n tnum" id="raceday">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
+      <div class="stat"><div class="n tnum">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
     </div>
     <div class="prog-wrap">
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -196,8 +156,12 @@
     </div>
   </div>
 
-  <!-- PLAN -->
   <div class="view on" id="view-plan">
+    <div class="tempobar" id="tempoBar">
+      <svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+      <span>Tempo regnet fra 10K-tid <b id="tempoBarVal">55:00</b></span>
+      <span class="edit">Endre</span>
+    </div>
     <div class="today" id="todayCard"></div>
     <div class="secttl">Planen</div>
     <div class="weeknav" id="weeknav"></div>
@@ -205,11 +169,10 @@
     <div id="dayList"></div>
   </div>
 
-  <!-- TEMPO -->
   <div class="view" id="view-calc">
-    <div class="secttl">Tempokalkulator</div>
+    <div class="secttl">Din 10K-tid</div>
     <div class="calc-in">
-      <div class="lab">Din 10K-tid</div>
+      <div class="lab">Legg inn nåværende 10K-tid – hele programmet justeres</div>
       <div class="timepick">
         <div class="tcol"><input id="ih" type="number" min="0" max="9" value="0"><div class="u">timer</div></div>
         <div class="colon">:</div>
@@ -217,6 +180,8 @@
         <div class="colon">:</div>
         <div class="tcol"><input id="is" type="number" min="0" max="59" value="0"><div class="u">sek</div></div>
       </div>
+      <div class="saverow" id="saveRow"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Lagret – planen er oppdatert</div>
+      <div class="warnrow" id="warnRow">Sjekk 10K-tiden – bruk en verdi mellom 20:00 og 2:00:00</div>
       <div class="calc-note">Soner skaleres fra 10K-farten · konkurransetider via Riegel</div>
     </div>
     <div class="secttl">Treningssoner</div>
@@ -225,58 +190,54 @@
     <div id="raceOut"></div>
   </div>
 
-  <!-- GUIDE -->
   <div class="view" id="view-guide">
     <div class="secttl">Slik gjør du øktene</div>
-    <div class="tips">
-      <h3>Kort om opplegget</h3>
-      <ul id="tipsList"></ul>
-    </div>
+    <div class="tips"><h3>Kort om opplegget</h3><ul id="tipsList"></ul></div>
     <div id="guideOut"></div>
   </div>
 
-  <!-- nav -->
   <div class="nav">
     <button class="on" data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Plan</span></button>
     <button data-v="calc"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3"/></svg><span>Tempo</span></button>
     <button data-v="guide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><span>Guide</span></button>
   </div>
 </div>
-
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
 
 <script>
 (function(){
 const COLORS={rest:'var(--e-rest)',rolig:'var(--e-rolig)',mod:'var(--e-mod)',long:'var(--e-long)',thr:'var(--e-thr)',vo2:'var(--e-vo2)',race:'var(--e-race)'};
-const TYPE={
-  rest:{label:'Hvile',zone:null},
-  rolig:{label:'Rolig',zone:'rolig'},
-  long:{label:'Langtur',zone:'long'},
-  thr:{label:'Terskelintervall',zone:'thr'},
-  vo2:{label:'VO₂max-intervall',zone:'vo2'},
-  race:{label:'Trondheim Maraton',zone:'race'}
-};
+const TYPE={rest:{label:'Hvile',zone:null},rolig:{label:'Rolig',zone:'rolig'},mod:{label:'Moderat',zone:'mod'},long:{label:'Langtur',zone:'long'},thr:{label:'Terskelintervall',zone:'thr'},vo2:{label:'VO₂max-intervall',zone:'vo2'},race:{label:'Trondheim Maraton',zone:'race'}};
 const DOW=['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
 const MON=['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+const REF10K=10/(55/60);
+const NOTE='<svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10"/></svg>';
 
-// week start (mon) ISO, taper flag, and 7 days
-function S(t,d,p){return {t,d:d||'',p:p||''};}
+function S(t,d,lo,hi,pre,post){return {t,d:d||'',lo:lo||0,hi:hi||0,pre:pre||'',post:post||''};}
 const R={t:'rest'};
+const PT='Pratetempo · ';
 const WEEKS=[
- {n:1,start:'2026-06-22',days:[R,R,S('rolig','7K','8,5 km/t'),R,S('thr','5×5 min, 1 min pause','10,5–10,6 km/t'),R,S('rolig','6K','Pratetempo')]},
- {n:2,start:'2026-06-29',days:[S('vo2','4×4 min, 3 min pause','12,1–12,6 km/t'),R,R,S('vo2','4×4 min, 3 min pause','12,1–12,6 km/t'),R,S('rolig','7K','Pratetempo'),R]},
- {n:3,start:'2026-07-06',days:[R,S('rolig','7K','Pratetempo'),R,S('thr','5×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','12K','Prog 9,5–10,5 + 2×1 km'),R]},
- {n:4,start:'2026-07-13',days:[R,S('rolig','7K','Pratetempo'),R,S('thr','30×45/15 sek','11,6–13,5 km/t'),R,S('long','12K','Prog 9,5–10,5 + 2×1 km'),R]},
- {n:5,start:'2026-07-20',days:[R,S('rolig','8K','Pratetempo'),R,S('thr','6×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','14K','Prog 9,5–10,5 + 3×1 km'),R]},
- {n:6,start:'2026-07-27',days:[R,S('vo2','4×4 min, 3 min pause','12,1–12,6 km/t'),R,S('rolig','7K','Pratetempo'),R,S('vo2','4×4 min, 3 min pause','12,1–12,6 km/t'),R]},
- {n:7,start:'2026-08-03',days:[R,S('rolig','8K','Pratetempo'),R,S('thr','6×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','14K','Prog 9,5–10,5 + 4×1 km'),R]},
- {n:8,start:'2026-08-10',days:[R,S('rolig','8K','Pratetempo'),R,S('thr','6×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','16K','Prog 9,5–10,5 + 2×2 km'),R]},
- {n:9,start:'2026-08-17',days:[R,S('rolig','8K','Pratetempo'),R,S('thr','6×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','16K','Prog 9,5–10,5 + 2×2 km'),R]},
- {n:10,start:'2026-08-24',days:[R,S('rolig','8K','Pratetempo'),R,S('thr','6×6 min, 1 min pause','10,6–11,1 km/t'),R,S('long','16K','Prog 9,5–10,5 + 3×2 km'),R]},
- {n:11,start:'2026-08-31',taper:true,days:[R,S('rolig','5K','Pratetempo'),R,S('thr','3×6 min, 1 min pause','10,6–11,1 km/t'),R,R,S('race','21,1 km','Måltid: 2:05')]}
+ {n:1,start:'2026-06-22',days:[R,R,S('rolig','7K',8.5,8.5),R,S('thr','5×5 min, 1 min pause',10.5,10.6),R,S('rolig','6K',8.1,8.6,PT)]},
+ {n:2,start:'2026-06-29',days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R]},
+ {n:3,start:'2026-07-06',days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
+ {n:4,start:'2026-07-13',days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','30×45/15 sek',11.6,13.5),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
+ {n:5,start:'2026-07-20',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 3×1 km'),R]},
+ {n:6,start:'2026-07-27',days:[R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R]},
+ {n:7,start:'2026-08-03',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 4×1 km'),R]},
+ {n:8,start:'2026-08-10',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
+ {n:9,start:'2026-08-17',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
+ {n:10,start:'2026-08-24',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 3×2 km'),R]},
+ {n:11,start:'2026-08-31',taper:true,days:[R,S('rolig','5K',8.1,8.6,PT),R,S('thr','3×6 min, 1 min pause',10.6,11.1),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
 ];
 
-// zone guide text (from program notes)
+const PRESET={
+ rolig:{label:'Rolig',lo:8.1,hi:8.6,pre:PT},
+ mod:{label:'Moderat',lo:9.5,hi:10.0,pre:''},
+ long:{label:'Langtur',lo:9.5,hi:10.5,pre:'Prog '},
+ thr:{label:'Terskel',lo:10.6,hi:11.1,pre:''},
+ vo2:{label:'VO₂max',lo:12.1,hi:12.6,pre:''}
+};
+
 const GUIDE=[
  {z:'rolig',title:'Rolig / pratetempo',range:'8,1–8,6 km/t',txt:'Skal foregå i pratetempo – du skal kunne snakke i lange setninger uten problem, og ikke hive etter pusten. Veldig behagelig i pust og puls. Hør på lydbok eller podkast og nyt turen. Ta gjerne disse på sti eller grus i marka.'},
  {z:'mod',title:'Moderat',range:'9,5–10 km/t',txt:'Litt tyngre enn pratetempo – du snakker i kortere setninger. Samtidig lettere intensitet enn terskelintervaller.'},
@@ -287,213 +248,207 @@ const GUIDE=[
 ];
 const TIPS=[
  'Oppvarming og nedjogg gjøres før og etter alle intervaller.',
- 'Programmet antar et nivå på ca. 55:00 på 10K. Bruk Tempo-fanen til å regne ut dine egne soner.',
+ 'Tempoene under skaleres fra 10K-tiden din – legg den inn i Tempo-fanen, så justeres hele planen.',
+ 'Trykk på en hviledag for å legge til en egen økt, eller på en økt for å slette den eller skrive en kommentar.',
  'Intervallene er programmert likt (4×4, 6×6 min osv.) for at progresjonen skal være målbar.',
  'Stiger formen, justerer vi opp: raskere fart, flere drag eller kortere pause. Blir det for tøft, går vi motsatt vei.',
- 'Langturer er bevisst nedprioritert til fordel for intervaller – mest avkastning på VO₂max og terskelfart fra ditt utgangspunkt.',
  'Tapering siste uke: behold intensiteten, men reduser volumet før løpet.'
 ];
 
-// ---------- helpers ----------
 function addDays(iso,d){const x=new Date(iso+'T00:00:00');x.setDate(x.getDate()+d);return x;}
 function fmtShort(dt){return dt.getDate()+'. '+MON[dt.getMonth()];}
 function todayMid(){const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate());}
 function sid(w,i){return 'w'+w+'d'+i;}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtTime(sec){sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;const p=n=>String(n).padStart(2,'0');return h>0?h+':'+p(m)+':'+p(s):m+':'+p(s);}
+function paceOf(kmh){return fmtTime(3600/kmh);}
+function num(kmh){return kmh.toFixed(1).replace('.',',');}
 
-// ---------- storage ----------
-let done={};
-async function loadDone(){
+let T10K=55*60;
+function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
+function tenKLabel(){return fmtTime(T10K);}
+function paceStr(d){
+  if(d.fixed)return d.fixed;
+  if(!d.lo)return '';
+  const f=factor(),lo=d.lo*f,hi=d.hi*f;
+  const kmt=(lo===hi)?(num(lo)+' km/t'):(num(lo)+'–'+num(hi)+' km/t');
+  const pk=(lo===hi)?paceOf(lo):(paceOf(hi)+'–'+paceOf(lo));
+  return (d.pre||'')+kmt+' ('+pk+' /km)'+(d.post||'');
+}
+
+// ---- state ----
+let done={},overrides={},comments={};
+function baseDay(wi,di){return WEEKS[wi].days[di];}
+function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
+
+async function loadState(){
+  try{const r=await window.storage.get('vilde-hm-10k');if(r&&r.value)T10K=JSON.parse(r.value);}catch(e){}
   try{const r=await window.storage.get('vilde-hm-done');if(r&&r.value)done=JSON.parse(r.value);}catch(e){done={};}
-  renderProgress();
+  try{const r=await window.storage.get('vilde-hm-overrides');if(r&&r.value)overrides=JSON.parse(r.value);}catch(e){overrides={};}
+  try{const r=await window.storage.get('vilde-hm-comments');if(r&&r.value)comments=JSON.parse(r.value);}catch(e){comments={};}
+  setInputsFromState();renderAll();
 }
-async function saveDone(){try{await window.storage.set('vilde-hm-done',JSON.stringify(done));}catch(e){}}
-function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];saveDone();renderProgress();renderWeek(selWeek);buildToday();}
+async function save(key,val){try{await window.storage.set(key,JSON.stringify(val));}catch(e){}}
+function renderAll(){renderProgress();buildToday();renderWeek(selWeek);renderCalc();updateTempoBar();}
 
-let totalSessions=0;
-WEEKS.forEach(w=>w.days.forEach(d=>{if(d.t!=='rest')totalSessions++;}));
-function doneCount(){return Object.keys(done).filter(k=>done[k]).length;}
-function renderProgress(){
-  const c=doneCount();
-  document.getElementById('progFill').style.width=(totalSessions?c/totalSessions*100:0)+'%';
-  document.getElementById('progTxt').textContent=c+' av '+totalSessions+' økter fullført';
-}
+function effList(){const a=[];WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(effDay(wi,di).t!=='rest')a.push(sid(w.n,di));}));return a;}
+function renderProgress(){const list=effList();const tot=list.length;const c=list.filter(id=>done[id]).length;document.getElementById('progFill').style.width=(tot?c/tot*100:0)+'%';document.getElementById('progTxt').textContent=c+' av '+tot+' økter fullført';}
 
-// ---------- countdown ----------
-(function(){
-  const race=new Date('2026-09-06T00:00:00');
-  const diff=Math.round((race-todayMid())/86400000);
-  document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');
-})();
+function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];save('vilde-hm-done',done);renderAll();}
 
-// ---------- which week is "current" ----------
-const tMid=todayMid();
-let curWeek=0,curDayIdx=-1;
-WEEKS.forEach((w,wi)=>{w.days.forEach((d,di)=>{
-  const dt=addDays(w.start,di);
-  if(dt.getTime()===tMid.getTime()){curWeek=wi;curDayIdx=di;}
-});});
-if(curWeek===0&&curDayIdx===-1){ // before/after program: clamp
-  const first=addDays(WEEKS[0].start,0), last=addDays(WEEKS[10].start,6);
-  if(tMid<first)curWeek=0; else if(tMid>last)curWeek=10;
-}
+(function(){const race=new Date('2026-09-06T00:00:00');const diff=Math.round((race-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');})();
+
+const tMid=todayMid();let curWeek=0,curDayIdx=-1;
+WEEKS.forEach((w,wi)=>{w.days.forEach((d,di)=>{const dt=addDays(w.start,di);if(dt.getTime()===tMid.getTime()){curWeek=wi;curDayIdx=di;}});});
+if(curWeek===0&&curDayIdx===-1){const first=addDays(WEEKS[0].start,0),last=addDays(WEEKS[10].start,6);if(tMid<first)curWeek=0;else if(tMid>last)curWeek=10;}
 let selWeek=curWeek;
 
-// ---------- today hero ----------
+function updateTempoBar(){document.getElementById('tempoBarVal').textContent=tenKLabel();}
+
 function buildToday(){
   const el=document.getElementById('todayCard');
-  let html,col,d,label,when;
   if(curDayIdx>=0){
-    const w=WEEKS[curWeek];d=w.days[curDayIdx];const dt=addDays(w.start,curDayIdx);
-    const tp=TYPE[d.t];col=COLORS[d.t];
-    label=tp.label; when=DOW[curDayIdx]+' '+fmtShort(dt);
-    const id=sid(w.n,curDayIdx);
-    const doneTxt=done[id]?' ✓':'';
-    html=`<div class="rail" style="background:${col}"></div><div class="body">
-      <div class="tag">I dag · ${when}</div>
-      <h2>${label}${doneTxt}</h2>
-      ${d.t!=='rest'?`<div class="sub">${d.d}</div><div class="pace">${d.p}</div>`:`<div class="pace">Restitusjon – ingen økt i dag.</div>`}
+    const w=WEEKS[curWeek];const d=effDay(curWeek,curDayIdx);const dt=addDays(w.start,curDayIdx);
+    const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,curDayIdx);const doneTxt=done[id]?' ✓':'';
+    el.innerHTML=`<div class="rail" style="background:${col}"></div><div class="body">
+      <div class="tag">I dag · ${DOW[curDayIdx]} ${fmtShort(dt)}</div>
+      <h2>${tp.label}${doneTxt}</h2>
+      ${d.t!=='rest'?`<div class="sub">${esc(d.d)}</div><div class="pace">${paceStr(d)}</div>`:`<div class="pace">Restitusjon – trykk for å legge til en økt.</div>`}
     </div>`;
-    el.style.cursor=d.t!=='rest'?'pointer':'default';
-    el.onclick=d.t!=='rest'?()=>openSheet(curWeek,curDayIdx):null;
+    el.style.cursor='pointer';
+    el.onclick=()=>openSheet(curWeek,curDayIdx);
   }else{
-    col='var(--pine)';
-    html=`<div class="rail" style="background:${col}"></div><div class="body">
-      <div class="tag">Treningsprogram</div><h2>Klar?</h2>
-      <div class="pace">Programmet går 22. juni – 6. september 2026.</div></div>`;
+    el.innerHTML=`<div class="rail" style="background:var(--pine)"></div><div class="body"><div class="tag">Treningsprogram</div><h2>Klar?</h2><div class="pace">Programmet går 22. juni – 6. september 2026.</div></div>`;
     el.onclick=null;
   }
-  el.innerHTML=html;
 }
 
-// ---------- week nav ----------
 function buildWeekNav(){
   const nav=document.getElementById('weeknav');nav.innerHTML='';
-  WEEKS.forEach((w,wi)=>{
-    const b=document.createElement('div');
+  WEEKS.forEach((w,wi)=>{const b=document.createElement('div');
     b.className='wpill'+(wi===selWeek?' sel':'')+(w.taper?' taper':'');
     b.innerHTML=`<div class="wt">${w.taper?'TAP':'U'+w.n}</div><div class="wd">${fmtShort(addDays(w.start,0))}</div>`;
-    b.onclick=()=>{selWeek=wi;renderWeek(wi);highlightNav();};
-    nav.appendChild(b);
-  });
+    b.onclick=()=>{selWeek=wi;renderWeek(wi);highlightNav();};nav.appendChild(b);});
 }
 function highlightNav(){[...document.getElementById('weeknav').children].forEach((c,i)=>c.classList.toggle('sel',i===selWeek));}
 
-// ---------- week day list ----------
 function renderWeek(wi){
   const w=WEEKS[wi];
-  const hd=document.getElementById('weekhead');
-  hd.innerHTML=`<div class="wk">Uke ${w.n}${w.taper?'<span class="taperbadge">Tapering</span>':''}</div>
-    <div class="rng">${fmtShort(addDays(w.start,0))} – ${fmtShort(addDays(w.start,6))}</div>`;
+  document.getElementById('weekhead').innerHTML=`<div class="wk">Uke ${w.n}${w.taper?'<span class="taperbadge">Tapering</span>':''}</div><div class="rng">${fmtShort(addDays(w.start,0))} – ${fmtShort(addDays(w.start,6))}</div>`;
   const list=document.getElementById('dayList');list.innerHTML='';
-  w.days.forEach((d,di)=>{
-    const dt=addDays(w.start,di);
-    const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,di);
-    const isToday=(wi===curWeek&&di===curDayIdx);
+  w.days.forEach((bd,di)=>{
+    const d=effDay(wi,di);const dt=addDays(w.start,di);const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,di);
+    const isToday=(wi===curWeek&&di===curDayIdx);const cmt=comments[id];
     const row=document.createElement('div');
     row.className='day '+(d.t==='rest'?'rest':'')+(d.t==='race'?' race':'')+(done[id]?' done':'')+(isToday?' today-row':'');
+    const cmtHtml=cmt?`<div class="cmt">${NOTE}<span>${esc(cmt)}</span></div>`:'';
     let mid;
-    if(d.t==='rest'){mid=`<div class="ttl">Hvile</div>`;}
-    else{mid=`<div class="ttl"><span class="dot" style="background:${col}"></span>${tp.label}</div>
-      <div class="det">${d.d}</div><div class="pc">${d.p}</div>`;}
-    row.innerHTML=`<div class="rail" style="background:${col}"></div>
-      <div class="date"><div class="dow">${DOW[di]}</div><div class="dnum">${dt.getDate()}</div></div>
-      <div class="main">${mid}</div>
-      <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div></div>`;
-    if(d.t!=='rest'){
-      row.querySelector('.main').onclick=()=>openSheet(wi,di);
-      row.querySelector('.chk').onclick=(e)=>{e.stopPropagation();toggle(id);};
-    }
+    if(d.t==='rest'){mid=`<div class="ttl">Hvile</div><div class="addhint">+ Legg til økt</div>${cmtHtml}`;}
+    else{mid=`<div class="ttl"><span class="dot" style="background:${col}"></span>${tp.label}${d.custom?' <span class="tagx">Egen</span>':''}</div><div class="det">${esc(d.d)}</div><div class="pc">${paceStr(d)}</div>${cmtHtml}`;}
+    row.innerHTML=`<div class="rail" style="background:${col}"></div><div class="date"><div class="dow">${DOW[di]}</div><div class="dnum">${dt.getDate()}</div></div><div class="main">${mid}</div><div class="chk"><div class="box"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div></div>`;
+    row.querySelector('.main').onclick=()=>openSheet(wi,di);
+    if(d.t!=='rest')row.querySelector('.chk').onclick=(e)=>{e.stopPropagation();toggle(id);};
     list.appendChild(row);
   });
 }
 
-// ---------- detail sheet ----------
+// ---- sheets ----
+let sheetCtx=null,addType=null;
 function openSheet(wi,di){
-  const w=WEEKS[wi];const d=w.days[di];const tp=TYPE[d.t];const col=COLORS[d.t];
-  const dt=addDays(w.start,di);const id=sid(w.n,di);
-  const g=GUIDE.find(x=>x.z===tp.zone);
-  const sheet=document.getElementById('sheet');
-  sheet.innerHTML=`<div class="grab"></div>
-    <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}</div>
-    <h2><span class="dot" style="background:${col}"></span>${tp.label}</h2>
-    <div class="dgrid">
-      <div class="dbox"><div class="l">Økt</div><div class="v">${d.d}</div></div>
-      <div class="dbox"><div class="l">Måltempo</div><div class="v">${d.p}</div></div>
-    </div>
-    ${g?`<div class="expl">${g.txt}</div>`:''}
-    <button class="donebtn ${done[id]?'is-done':''}" id="dbtn">${done[id]?'✓ Fullført – angre':'Marker som fullført'}</button>`;
-  document.getElementById('dbtn').onclick=()=>{toggle(id);closeSheet();};
+  const d=effDay(wi,di);
+  if(d.t==='rest')renderAddSheet(wi,di);else renderDetailSheet(wi,di,d);
   document.getElementById('scrim').classList.add('on');
 }
-function closeSheet(){document.getElementById('scrim').classList.remove('on');}
+function closeSheet(){document.getElementById('scrim').classList.remove('on');renderAll();}
 document.getElementById('scrim').onclick=(e)=>{if(e.target.id==='scrim')closeSheet();};
 
-// ---------- guide view ----------
+function commentBlock(id){return `<div class="field"><label>Din kommentar</label><textarea id="cmtBox" placeholder="Hvordan gikk økta? Følelse, vær, justeringer …">${esc(comments[id]||'')}</textarea></div>`;}
+function bindComment(id){const t=document.getElementById('cmtBox');if(!t)return;t.addEventListener('input',()=>{const v=t.value.trim();if(v)comments[id]=v;else delete comments[id];save('vilde-hm-comments',comments);});}
+
+function renderDetailSheet(wi,di,d){
+  const w=WEEKS[wi];const tp=TYPE[d.t];const col=COLORS[d.t];const dt=addDays(w.start,di);const id=sid(w.n,di);
+  const g=GUIDE.find(x=>x.z===tp.zone);const baseHad=baseDay(wi,di).t!=='rest';
+  document.getElementById('sheet').innerHTML=`<div class="grab"></div>
+    <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}${d.custom?' <span class="x">Egendefinert</span>':''}</div>
+    <h2><span class="dot" style="background:${col}"></span>${tp.label}</h2>
+    <div class="dgrid">
+      <div class="dbox"><div class="l">Økt</div><div class="v">${esc(d.d)||'–'}</div></div>
+      <div class="dbox"><div class="l">Måltempo</div><div class="v">${paceStr(d)||'–'}</div></div>
+    </div>
+    ${g?`<div class="expl">${g.txt}</div>`:''}
+    ${commentBlock(id)}
+    <button class="donebtn ${done[id]?'is-done':''}" id="dbtn">${done[id]?'✓ Fullført – angre':'Marker som fullført'}</button>
+    <div class="linkbtns">
+      <button class="delbtn" id="delBtn">Slett økt</button>
+      ${(overrides[id]&&baseHad)?'<button class="resetbtn" id="resetBtn">Tilbakestill original</button>':''}
+    </div>`;
+  bindComment(id);
+  document.getElementById('dbtn').onclick=()=>{toggle(id);closeSheet();};
+  document.getElementById('delBtn').onclick=()=>{deleteDay(wi,di);closeSheet();};
+  const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
+}
+
+function renderAddSheet(wi,di){
+  const w=WEEKS[wi];const dt=addDays(w.start,di);const id=sid(w.n,di);
+  const baseHad=baseDay(wi,di).t!=='rest';addType=null;
+  const types=['rolig','mod','long','thr','vo2'];
+  const btns=types.map(t=>`<button class="typebtn" data-t="${t}"><span class="dot" style="background:${COLORS[t]}"></span>${PRESET[t].label}</button>`).join('');
+  document.getElementById('sheet').innerHTML=`<div class="grab"></div>
+    <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}</div>
+    <h2>Legg til økt</h2>
+    <div class="field"><label>Type økt</label><div class="typegrid" id="typeGrid">${btns}</div></div>
+    <div class="field"><label>Varighet / innhold</label><input id="addDur" placeholder="f.eks. 8K eller 5×5 min, 1 min pause"></div>
+    ${commentBlock(id)}
+    <button class="addbtn" id="addBtn" disabled>Legg til økt</button>
+    ${baseHad?'<div class="linkbtns"><button class="resetbtn" id="restoreBtn">Gjenopprett original økt</button></div>':''}`;
+  bindComment(id);
+  document.querySelectorAll('#typeGrid .typebtn').forEach(b=>{b.onclick=()=>{addType=b.dataset.t;document.querySelectorAll('#typeGrid .typebtn').forEach(x=>x.classList.toggle('sel',x===b));document.getElementById('addBtn').disabled=false;};});
+  document.getElementById('addBtn').onclick=()=>{
+    if(!addType)return;const p=PRESET[addType];
+    overrides[id]={t:addType,d:document.getElementById('addDur').value.trim(),lo:p.lo,hi:p.hi,pre:p.pre,post:'',custom:true};
+    save('vilde-hm-overrides',overrides);closeSheet();
+  };
+  const rb=document.getElementById('restoreBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
+}
+
+function deleteDay(wi,di){const id=sid(WEEKS[wi].n,di);if(baseDay(wi,di).t!=='rest')overrides[id]={del:1};else delete overrides[id];delete done[id];save('vilde-hm-overrides',overrides);save('vilde-hm-done',done);}
+
+// ---- guide ----
 (function(){
   const tl=document.getElementById('tipsList');TIPS.forEach(t=>{const li=document.createElement('li');li.textContent=t;tl.appendChild(li);});
   const out=document.getElementById('guideOut');
-  GUIDE.forEach(g=>{
-    const c=document.createElement('div');c.className='gcard';
-    c.innerHTML=`<div class="gh"><span class="dot" style="background:${COLORS[g.z]}"></span>${g.title}${g.range?`<span class="grange">${g.range}</span>`:''}</div><p>${g.txt}</p>`;
-    out.appendChild(c);
-  });
+  GUIDE.forEach(g=>{const c=document.createElement('div');c.className='gcard';c.innerHTML=`<div class="gh"><span class="dot" style="background:${COLORS[g.z]}"></span>${g.title}${g.range?`<span class="grange">${g.range}</span>`:''}</div><p>${g.txt}</p>`;out.appendChild(c);});
 })();
 
-// ---------- calculator ----------
-const REF10K=10000/(55*60)*3.6; // km/h at 55:00 -> 10.909
-const ZONES=[
- {z:'rolig',name:'Rolig',sub:'Pratetempo',lo:8.1,hi:8.6},
- {z:'mod',name:'Moderat',sub:'Litt tyngre',lo:9.5,hi:10.0},
- {z:'thr',name:'Terskel',sub:'Litt tungt',lo:10.6,hi:11.1},
- {z:'vo2',name:'VO₂max',sub:'Veldig tungt',lo:12.1,hi:12.6}
-];
-const RACES=[
- {name:'Maraton',sub:'42,2 km',d:42.195},
- {name:'Halvmaraton',sub:'21,1 km',d:21.0975,star:true},
- {name:'10K',sub:'Din input',d:10},
- {name:'5K',sub:'5 km',d:5},
- {name:'3K',sub:'3 km',d:3}
-];
-function fmtTime(sec){sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;
-  const p=n=>String(n).padStart(2,'0');return h>0?h+':'+p(m)+':'+p(s):m+':'+p(s);}
-function pace(kmh){return fmtTime(3600/kmh);} // sec per km -> m:ss
-function num(kmh){return kmh.toFixed(1).replace('.',',');}
-function calc(){
-  const h=+document.getElementById('ih').value||0,m=+document.getElementById('im').value||0,s=+document.getElementById('is').value||0;
-  const t=h*3600+m*60+s;if(t<=0)return;
-  const spd=10/(t/3600); const f=spd/REF10K;
+// ---- calculator ----
+const ZONES=[{z:'rolig',name:'Rolig',sub:'Pratetempo',lo:8.1,hi:8.6},{z:'mod',name:'Moderat',sub:'Litt tyngre',lo:9.5,hi:10.0},{z:'thr',name:'Terskel',sub:'Litt tungt',lo:10.6,hi:11.1},{z:'vo2',name:'VO₂max',sub:'Veldig tungt',lo:12.1,hi:12.6}];
+const RACES=[{name:'Maraton',sub:'42,2 km',d:42.195},{name:'Halvmaraton',sub:'21,1 km',d:21.0975,star:true},{name:'10K',sub:'Din input',d:10},{name:'5K',sub:'5 km',d:5},{name:'3K',sub:'3 km',d:3}];
+function renderCalc(){
+  const f=factor();
   const zo=document.getElementById('zoneOut');zo.innerHTML='';
-  ZONES.forEach(z=>{
-    const lo=z.lo*f,hi=z.hi*f,mid=(lo+hi)/2;
-    const r=document.createElement('div');r.className='zrow';
-    r.innerHTML=`<div class="rail" style="background:${COLORS[z.z]}"></div>
-      <div class="znm"><div class="a">${z.name}</div><div class="b">${z.sub} · ${pace(hi)}–${pace(lo)} /km</div></div>
-      <div class="zv"><div class="big tnum">${num(lo)}–${num(hi)}</div><div class="small">km/t</div></div>`;
-    zo.appendChild(r);
-  });
+  ZONES.forEach(z=>{const lo=z.lo*f,hi=z.hi*f;const r=document.createElement('div');r.className='zrow';
+    r.innerHTML=`<div class="rail" style="background:${COLORS[z.z]}"></div><div class="znm"><div class="a">${z.name}</div><div class="b">${z.sub} · ${paceOf(hi)}–${paceOf(lo)} /km</div></div><div class="zv"><div class="big tnum">${num(lo)}–${num(hi)}</div><div class="small">km/t</div></div>`;zo.appendChild(r);});
   const ro=document.getElementById('raceOut');ro.innerHTML='';
-  RACES.forEach(rc=>{
-    const T=t*Math.pow(rc.d/10,1.06); const v=rc.d/(T/3600);
-    const r=document.createElement('div');r.className='zrow';
-    r.innerHTML=`<div class="rail" style="background:${rc.star?'var(--e-race)':'var(--pine)'}"></div>
-      <div class="znm"><div class="a">${rc.name}</div><div class="b">${rc.sub} · ${num(v)} km/t · ${pace(v)} /km</div></div>
-      <div class="zv"><div class="big tnum">${fmtTime(T)}</div><div class="small">sluttid</div></div>`;
-    ro.appendChild(r);
-  });
+  RACES.forEach(rc=>{const T=T10K*Math.pow(rc.d/10,1.06);const v=rc.d/(T/3600);const r=document.createElement('div');r.className='zrow';
+    r.innerHTML=`<div class="rail" style="background:${rc.star?'var(--e-race)':'var(--pine)'}"></div><div class="znm"><div class="a">${rc.name}</div><div class="b">${rc.sub} · ${num(v)} km/t · ${paceOf(v)} /km</div></div><div class="zv"><div class="big tnum">${fmtTime(T)}</div><div class="small">sluttid</div></div>`;ro.appendChild(r);});
 }
-['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',calc));
 
-// ---------- nav ----------
-document.querySelectorAll('.nav button').forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-    document.getElementById('view-'+b.dataset.v).classList.add('on');
-    window.scrollTo(0,0);
-  };
-});
+function setInputsFromState(){const h=Math.floor(T10K/3600),m=Math.floor(T10K%3600/60),s=T10K%60;document.getElementById('ih').value=h;document.getElementById('im').value=m;document.getElementById('is').value=s;}
+let saveTimer=null;
+function onInput(){
+  const h=+document.getElementById('ih').value||0,m=+document.getElementById('im').value||0,s=+document.getElementById('is').value||0;
+  const t=h*3600+m*60+s;
+  const warn=document.getElementById('warnRow');
+  if(t<1200||t>7200){warn.classList.add('show');document.getElementById('saveRow').classList.remove('show');return;}
+  warn.classList.remove('show');T10K=t;
+  renderCalc();buildToday();renderWeek(selWeek);updateTempoBar();save('vilde-hm-10k',T10K);
+  const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
+}
+['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
 
-// ---------- init ----------
-buildToday();buildWeekNav();renderWeek(selWeek);calc();loadDone();
+document.getElementById('tempoBar').onclick=()=>{document.querySelector('.nav button[data-v="calc"]').click();};
+document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+b.dataset.v).classList.add('on');window.scrollTo(0,0);};});
+
+buildWeekNav();loadState();
 })();
 </script>
