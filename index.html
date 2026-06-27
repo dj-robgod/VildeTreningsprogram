@@ -80,6 +80,11 @@
 .tcol input:focus{outline:none;border-color:var(--pine)}
 .tcol input::-webkit-outer-spin-button,.tcol input::-webkit-inner-spin-button{-webkit-appearance:none}
 .tcol .u{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.datefields{display:flex;gap:10px}
+.dfield{flex:1}
+.dfield label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px}
+.dfield input{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 12px;font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;color:var(--ink)}
+.dfield input:focus{outline:none;border-color:var(--pine)}
 .colon{font-family:'Oswald';font-size:30px;font-weight:600;color:var(--line);padding-bottom:16px}
 .calc-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px}
 .saverow{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:12px;font-size:11.5px;color:var(--pine);font-weight:600;opacity:0;transition:.3s;height:0;overflow:hidden}
@@ -148,7 +153,7 @@
     <h1>Vilde → Trondheim Maraton</h1>
     <div class="meta">
       <div class="stat"><div class="n tnum" id="countdown">–</div><div class="l">dager igjen</div></div>
-      <div class="stat"><div class="n tnum">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
+      <div class="stat"><div class="n tnum" id="raceLabel">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
     </div>
     <div class="prog-wrap">
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -170,6 +175,15 @@
   </div>
 
   <div class="view" id="view-calc">
+    <div class="secttl">Programdatoer</div>
+    <div class="calc-in">
+      <div class="lab">Startdato og løpsdato henger sammen</div>
+      <div class="datefields">
+        <div class="dfield"><label>Start · uke 1</label><input type="date" id="startDate"></div>
+        <div class="dfield"><label>Løpsdag</label><input type="date" id="raceDate"></div>
+      </div>
+      <div class="calc-note">Uke 1 starter alltid på en mandag · løpet er programmets siste dag</div>
+    </div>
     <div class="secttl">Din 10K-tid</div>
     <div class="calc-in">
       <div class="lab">Legg inn nåværende 10K-tid – hele programmet justeres</div>
@@ -217,17 +231,17 @@ function S(t,d,lo,hi,pre,post){return {t,d:d||'',lo:lo||0,hi:hi||0,pre:pre||'',p
 const R={t:'rest'};
 const PT='Pratetempo · ';
 const WEEKS=[
- {n:1,start:'2026-06-22',days:[R,R,S('rolig','7K',8.5,8.5),R,S('thr','5×5 min, 1 min pause',10.5,10.6),R,S('rolig','6K',8.1,8.6,PT)]},
- {n:2,start:'2026-06-29',days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R]},
- {n:3,start:'2026-07-06',days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
- {n:4,start:'2026-07-13',days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','30×45/15 sek',11.6,13.5),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
- {n:5,start:'2026-07-20',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 3×1 km'),R]},
- {n:6,start:'2026-07-27',days:[R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R]},
- {n:7,start:'2026-08-03',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 4×1 km'),R]},
- {n:8,start:'2026-08-10',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
- {n:9,start:'2026-08-17',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
- {n:10,start:'2026-08-24',days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 3×2 km'),R]},
- {n:11,start:'2026-08-31',taper:true,days:[R,S('rolig','5K',8.1,8.6,PT),R,S('thr','3×6 min, 1 min pause',10.6,11.1),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
+ {n:1,days:[R,R,S('rolig','7K',8.5,8.5),R,S('thr','5×5 min, 1 min pause',10.5,10.6),R,S('rolig','6K',8.1,8.6,PT)]},
+ {n:2,days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R]},
+ {n:3,days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
+ {n:4,days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','30×45/15 sek',11.6,13.5),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
+ {n:5,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 3×1 km'),R]},
+ {n:6,days:[R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R]},
+ {n:7,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 4×1 km'),R]},
+ {n:8,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
+ {n:9,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
+ {n:10,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 3×2 km'),R]},
+ {n:11,taper:true,days:[R,S('rolig','5K',8.1,8.6,PT),R,S('thr','3×6 min, 1 min pause',10.6,11.1),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
 ];
 
 const PRESET={
@@ -265,6 +279,12 @@ function paceOf(kmh){return fmtTime(3600/kmh);}
 function num(kmh){return kmh.toFixed(1).replace('.',',');}
 
 let T10K=55*60;
+let START='2026-06-22';
+const PROG_DAYS=(WEEKS.length-1)*7+6;
+function toISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+function dayDate(wi,di){return addDays(START,wi*7+di);}
+function raceDate(){return dayDate(WEEKS.length-1,6);}
+function snapToMonday(d){const off=(d.getDay()+6)%7;return addDays(toISO(d),-off);}
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
 function paceStr(d){
@@ -282,33 +302,34 @@ function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
 async function loadState(){
+  try{const r=await window.storage.get('vilde-hm-start');if(r&&r.value)START=JSON.parse(r.value);}catch(e){}
   try{const r=await window.storage.get('vilde-hm-10k');if(r&&r.value)T10K=JSON.parse(r.value);}catch(e){}
   try{const r=await window.storage.get('vilde-hm-done');if(r&&r.value)done=JSON.parse(r.value);}catch(e){done={};}
   try{const r=await window.storage.get('vilde-hm-overrides');if(r&&r.value)overrides=JSON.parse(r.value);}catch(e){overrides={};}
   try{const r=await window.storage.get('vilde-hm-comments');if(r&&r.value)comments=JSON.parse(r.value);}catch(e){comments={};}
-  setInputsFromState();renderAll();
+  computeCurrent();selWeek=curWeek;setInputsFromState();setDateInputs();buildWeekNav();renderAll();
 }
+function setDateInputs(){const sd=document.getElementById('startDate'),rd=document.getElementById('raceDate');if(sd)sd.value=START;if(rd)rd.value=toISO(raceDate());}
+function afterDateChange(){save('vilde-hm-start',START);computeCurrent();selWeek=curWeek;setDateInputs();buildWeekNav();highlightNav();renderAll();}
 async function save(key,val){try{await window.storage.set(key,JSON.stringify(val));}catch(e){}}
-function renderAll(){renderProgress();buildToday();renderWeek(selWeek);renderCalc();updateTempoBar();}
+function renderAll(){renderProgress();buildToday();renderWeek(selWeek);renderCalc();updateTempoBar();updateHeader();}
 
 function effList(){const a=[];WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(effDay(wi,di).t!=='rest')a.push(sid(w.n,di));}));return a;}
 function renderProgress(){const list=effList();const tot=list.length;const c=list.filter(id=>done[id]).length;document.getElementById('progFill').style.width=(tot?c/tot*100:0)+'%';document.getElementById('progTxt').textContent=c+' av '+tot+' økter fullført';}
 
 function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];save('vilde-hm-done',done);renderAll();}
 
-(function(){const race=new Date('2026-09-06T00:00:00');const diff=Math.round((race-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');})();
+function updateHeader(){const rd=raceDate();const diff=Math.round((rd-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');document.getElementById('raceLabel').textContent=fmtShort(rd);}
 
-const tMid=todayMid();let curWeek=0,curDayIdx=-1;
-WEEKS.forEach((w,wi)=>{w.days.forEach((d,di)=>{const dt=addDays(w.start,di);if(dt.getTime()===tMid.getTime()){curWeek=wi;curDayIdx=di;}});});
-if(curWeek===0&&curDayIdx===-1){const first=addDays(WEEKS[0].start,0),last=addDays(WEEKS[10].start,6);if(tMid<first)curWeek=0;else if(tMid>last)curWeek=10;}
-let selWeek=curWeek;
+let curWeek=0,curDayIdx=-1,selWeek=0;
+function computeCurrent(){curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}}
 
 function updateTempoBar(){document.getElementById('tempoBarVal').textContent=tenKLabel();}
 
 function buildToday(){
   const el=document.getElementById('todayCard');
   if(curDayIdx>=0){
-    const w=WEEKS[curWeek];const d=effDay(curWeek,curDayIdx);const dt=addDays(w.start,curDayIdx);
+    const w=WEEKS[curWeek];const d=effDay(curWeek,curDayIdx);const dt=dayDate(curWeek,curDayIdx);
     const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,curDayIdx);const doneTxt=done[id]?' ✓':'';
     el.innerHTML=`<div class="rail" style="background:${col}"></div><div class="body">
       <div class="tag">I dag · ${DOW[curDayIdx]} ${fmtShort(dt)}</div>
@@ -327,17 +348,17 @@ function buildWeekNav(){
   const nav=document.getElementById('weeknav');nav.innerHTML='';
   WEEKS.forEach((w,wi)=>{const b=document.createElement('div');
     b.className='wpill'+(wi===selWeek?' sel':'')+(w.taper?' taper':'');
-    b.innerHTML=`<div class="wt">${w.taper?'TAP':'U'+w.n}</div><div class="wd">${fmtShort(addDays(w.start,0))}</div>`;
+    b.innerHTML=`<div class="wt">${w.taper?'TAP':'U'+w.n}</div><div class="wd">${fmtShort(dayDate(wi,0))}</div>`;
     b.onclick=()=>{selWeek=wi;renderWeek(wi);highlightNav();};nav.appendChild(b);});
 }
 function highlightNav(){[...document.getElementById('weeknav').children].forEach((c,i)=>c.classList.toggle('sel',i===selWeek));}
 
 function renderWeek(wi){
   const w=WEEKS[wi];
-  document.getElementById('weekhead').innerHTML=`<div class="wk">Uke ${w.n}${w.taper?'<span class="taperbadge">Tapering</span>':''}</div><div class="rng">${fmtShort(addDays(w.start,0))} – ${fmtShort(addDays(w.start,6))}</div>`;
+  document.getElementById('weekhead').innerHTML=`<div class="wk">Uke ${w.n}${w.taper?'<span class="taperbadge">Tapering</span>':''}</div><div class="rng">${fmtShort(dayDate(wi,0))} – ${fmtShort(dayDate(wi,6))}</div>`;
   const list=document.getElementById('dayList');list.innerHTML='';
   w.days.forEach((bd,di)=>{
-    const d=effDay(wi,di);const dt=addDays(w.start,di);const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,di);
+    const d=effDay(wi,di);const dt=dayDate(wi,di);const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,di);
     const isToday=(wi===curWeek&&di===curDayIdx);const cmt=comments[id];
     const row=document.createElement('div');
     row.className='day '+(d.t==='rest'?'rest':'')+(d.t==='race'?' race':'')+(done[id]?' done':'')+(isToday?' today-row':'');
@@ -366,7 +387,7 @@ function commentBlock(id){return `<div class="field"><label>Din kommentar</label
 function bindComment(id){const t=document.getElementById('cmtBox');if(!t)return;t.addEventListener('input',()=>{const v=t.value.trim();if(v)comments[id]=v;else delete comments[id];save('vilde-hm-comments',comments);});}
 
 function renderDetailSheet(wi,di,d){
-  const w=WEEKS[wi];const tp=TYPE[d.t];const col=COLORS[d.t];const dt=addDays(w.start,di);const id=sid(w.n,di);
+  const w=WEEKS[wi];const tp=TYPE[d.t];const col=COLORS[d.t];const dt=dayDate(wi,di);const id=sid(w.n,di);
   const g=GUIDE.find(x=>x.z===tp.zone);const baseHad=baseDay(wi,di).t!=='rest';
   document.getElementById('sheet').innerHTML=`<div class="grab"></div>
     <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}${d.custom?' <span class="x">Egendefinert</span>':''}</div>
@@ -389,7 +410,7 @@ function renderDetailSheet(wi,di,d){
 }
 
 function renderAddSheet(wi,di){
-  const w=WEEKS[wi];const dt=addDays(w.start,di);const id=sid(w.n,di);
+  const w=WEEKS[wi];const dt=dayDate(wi,di);const id=sid(w.n,di);
   const baseHad=baseDay(wi,di).t!=='rest';addType=null;
   const types=['rolig','mod','long','thr','vo2'];
   const btns=types.map(t=>`<button class="typebtn" data-t="${t}"><span class="dot" style="background:${COLORS[t]}"></span>${PRESET[t].label}</button>`).join('');
@@ -445,10 +466,12 @@ function onInput(){
   const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
 }
 ['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
+document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;START=toISO(snapToMonday(new Date(v+'T00:00:00')));afterDateChange();});
+document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const m=snapToMonday(new Date(v+'T00:00:00'));START=toISO(addDays(toISO(m),-(PROG_DAYS-6)));afterDateChange();});
 
 document.getElementById('tempoBar').onclick=()=>{document.querySelector('.nav button[data-v="calc"]').click();};
 document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+b.dataset.v).classList.add('on');window.scrollTo(0,0);};});
 
-buildWeekNav();loadState();
+loadState();
 })();
 </script>
