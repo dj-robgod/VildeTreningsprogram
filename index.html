@@ -35,7 +35,7 @@
 .secttl::after{content:'';flex:1;height:1px;background:var(--line)}
 .weeknav{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
 .weeknav::-webkit-scrollbar{display:none}
-.wpill{flex:none;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:7px 12px;cursor:pointer;text-align:center;min-width:54px;transition:.15s}
+.wpill{flex:none;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:7px 13px;cursor:pointer;text-align:center;min-width:62px;transition:.15s}
 .wpill .wt{font-family:'Oswald';font-weight:600;font-size:15px;line-height:1}
 .wpill .wd{font-size:9.5px;color:var(--muted);margin-top:2px;letter-spacing:.03em}
 .wpill.sel{background:var(--pine);border-color:var(--pine);color:#fff}
@@ -45,6 +45,31 @@
 .weekhead .wk{font-family:'Oswald';font-size:20px;font-weight:600}
 .weekhead .rng{font-size:12px;color:var(--muted)}
 .taperbadge{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;background:#F3E6CF;color:#9A6B12;padding:3px 8px;border-radius:99px;font-weight:700;margin-left:8px}
+.wkhead2{display:flex;justify-content:space-between;align-items:baseline;margin:20px 2px 10px}
+.wkhead2.first{margin-top:4px}
+.wkhead2 .w2{font-family:'Oswald';font-size:16px;font-weight:600;display:flex;align-items:center}
+.wkhead2 .rng{font-size:12px;color:var(--muted)}
+.calwrap{overflow-x:auto;margin:0 -4px;padding:0 4px 8px;-webkit-overflow-scrolling:touch}
+.calgrid{display:grid;gap:5px;align-items:stretch}
+.calhd-day{display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:2px}
+.calhd-day.we{color:#B6713A}
+.calwk{display:flex;align-items:center;justify-content:center;gap:2px;font-family:'Oswald';font-size:13px;font-weight:600;color:var(--pine)}
+.calwk .tp{background:#F3E6CF;color:#9A6B12;border-radius:99px;padding:0 3px;font-size:8.5px;font-family:'Inter',sans-serif;font-weight:700}
+.cell{background:var(--card);border:1px solid var(--line);border-top-width:3px;border-radius:9px;padding:4px 5px 6px;min-height:70px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:1px;transition:.12s;overflow:hidden}
+.cell:active{transform:scale(.97)}
+.cell.rest{background:#FBFAF6}
+.cell.today-c{outline:2px solid var(--pine);outline-offset:0}
+.cell.done-c{opacity:.5}
+.cell .cdate{font-family:'Oswald';font-size:12px;font-weight:600;line-height:1;color:var(--muted)}
+.cell .cs{font-size:10px;font-weight:600;line-height:1.12;display:flex;align-items:flex-start;gap:3px;margin-top:2px;color:var(--ink)}
+.cell .cs .dot{width:6px;height:6px;border-radius:99px;flex:none;margin-top:3px}
+.cell .cs .lab{overflow:hidden;overflow-wrap:anywhere}
+.cell .cd{font-size:9px;color:var(--muted);line-height:1.18;margin-top:2px;overflow-wrap:anywhere}
+.cell .cs.rest{color:var(--muted);font-weight:500;margin-top:2px;font-size:9.5px}
+.cell .ck{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:99px;background:var(--pine);display:flex;align-items:center;justify-content:center}
+.cell .ck svg{width:8px;height:8px;stroke:#fff;stroke-width:3.6;fill:none}
+.cell .cnote{position:absolute;bottom:3px;right:3px}
+.cell .cnote svg{width:10px;height:10px;stroke:var(--muted);fill:none;stroke-width:2}
 .day{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,35,29,.04)}
 .day.today-row{outline:2px solid var(--pine);outline-offset:0}
 .day .rail{width:5px;flex:none}
@@ -150,7 +175,7 @@
 <div id="app">
   <div class="hdr">
     <div class="eyebrow">Treningsprogram · Halvmaraton</div>
-    <h1>Vilde → Trondheim Maraton</h1>
+    <h1 id="appTitle">Vilde → Trondheim Maraton</h1>
     <div class="meta">
       <div class="stat"><div class="n tnum" id="countdown">–</div><div class="l">dager igjen</div></div>
       <div class="stat"><div class="n tnum" id="raceLabel">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
@@ -175,15 +200,6 @@
   </div>
 
   <div class="view" id="view-calc">
-    <div class="secttl">Programdatoer</div>
-    <div class="calc-in">
-      <div class="lab">Startdato og løpsdato henger sammen</div>
-      <div class="datefields">
-        <div class="dfield"><label>Start · uke 1</label><input type="date" id="startDate"></div>
-        <div class="dfield"><label>Løpsdag</label><input type="date" id="raceDate"></div>
-      </div>
-      <div class="calc-note">Uke 1 starter alltid på en mandag · løpet er programmets siste dag</div>
-    </div>
     <div class="secttl">Din 10K-tid</div>
     <div class="calc-in">
       <div class="lab">Legg inn nåværende 10K-tid – hele programmet justeres</div>
@@ -210,10 +226,28 @@
     <div id="guideOut"></div>
   </div>
 
+  <div class="view" id="view-oppsett">
+    <div class="secttl">Deltaker & løp</div>
+    <div class="calc-in">
+      <div class="field" style="margin-top:0"><label>Navn på utøver</label><input type="text" id="personName" placeholder="Navn"></div>
+      <div class="field"><label>Navn på løpet</label><input type="text" id="raceName" placeholder="Navn på løpet"></div>
+    </div>
+    <div class="secttl">Programdatoer</div>
+    <div class="calc-in">
+      <div class="lab">Startdato og løpsdato henger sammen</div>
+      <div class="datefields">
+        <div class="dfield"><label>Start · uke 1</label><input type="date" id="startDate"></div>
+        <div class="dfield"><label>Løpsdag</label><input type="date" id="raceDate"></div>
+      </div>
+      <div class="calc-note">Uke 1 starter alltid på en mandag · løpet er programmets siste dag</div>
+    </div>
+  </div>
+
   <div class="nav">
     <button class="on" data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Plan</span></button>
     <button data-v="calc"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3"/></svg><span>Tempo</span></button>
     <button data-v="guide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><span>Guide</span></button>
+    <button data-v="oppsett"><svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><span>Oppsett</span></button>
   </div>
 </div>
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
@@ -224,6 +258,7 @@ const COLORS={rest:'var(--e-rest)',rolig:'var(--e-rolig)',mod:'var(--e-mod)',lon
 const TYPE={rest:{label:'Hvile',zone:null},rolig:{label:'Rolig',zone:'rolig'},mod:{label:'Moderat',zone:'mod'},long:{label:'Langtur',zone:'long'},thr:{label:'Terskelintervall',zone:'thr'},vo2:{label:'VO₂max-intervall',zone:'vo2'},race:{label:'Trondheim Maraton',zone:'race'}};
 const DOW=['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
 const MON=['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+const MONFULL=['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'];
 const REF10K=10/(55/60);
 const NOTE='<svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10"/></svg>';
 
@@ -280,11 +315,14 @@ function num(kmh){return kmh.toFixed(1).replace('.',',');}
 
 let T10K=55*60;
 let START='2026-06-22';
+let PERSON='Vilde',RACE='Trondheim Maraton';
 const PROG_DAYS=(WEEKS.length-1)*7+6;
 function toISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function dayDate(wi,di){return addDays(START,wi*7+di);}
 function raceDate(){return dayDate(WEEKS.length-1,6);}
 function snapToMonday(d){const off=(d.getDay()+6)%7;return addDays(toISO(d),-off);}
+function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').trim()||'Løpet';TYPE.race.label=r;const t=document.getElementById('appTitle');if(t)t.textContent=p+' → '+r;}
+function setNameInputs(){const a=document.getElementById('personName'),b=document.getElementById('raceName');if(a)a.value=PERSON;if(b)b.value=RACE;}
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
 function paceStr(d){
@@ -301,18 +339,27 @@ let done={},overrides={},comments={};
 function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
+const Store=(()=>{const ws=(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function')?window.storage:null;
+let ls=null;try{ls=window['localStorage'];ls.setItem('__hm_t','1');ls.removeItem('__hm_t');}catch(e){ls=null;}
+return{
+ async get(k){if(ws){try{const r=await ws.get(k);return (r&&r.value!=null)?r.value:null;}catch(e){}}if(ls){try{return ls.getItem(k);}catch(e){}}return null;},
+ async set(k,v){if(ws){try{await ws.set(k,v);return;}catch(e){}}if(ls){try{ls.setItem(k,v);}catch(e){}}}
+};})();
 async function loadState(){
-  try{const r=await window.storage.get('vilde-hm-start');if(r&&r.value)START=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('vilde-hm-10k');if(r&&r.value)T10K=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('vilde-hm-done');if(r&&r.value)done=JSON.parse(r.value);}catch(e){done={};}
-  try{const r=await window.storage.get('vilde-hm-overrides');if(r&&r.value)overrides=JSON.parse(r.value);}catch(e){overrides={};}
-  try{const r=await window.storage.get('vilde-hm-comments');if(r&&r.value)comments=JSON.parse(r.value);}catch(e){comments={};}
-  computeCurrent();selWeek=curWeek;setInputsFromState();setDateInputs();buildWeekNav();renderAll();
+  const g=async(k)=>{try{const v=await Store.get(k);return v?JSON.parse(v):null;}catch(e){return null;}};
+  const vs=await g('vilde-hm-start');if(vs)START=vs;
+  const vt=await g('vilde-hm-10k');if(vt!=null)T10K=vt;
+  const vd=await g('vilde-hm-done');if(vd)done=vd;
+  const vo=await g('vilde-hm-overrides');if(vo)overrides=vo;
+  const vc=await g('vilde-hm-comments');if(vc)comments=vc;
+  const vp=await g('vilde-hm-person');if(vp!=null)PERSON=vp;
+  const vr=await g('vilde-hm-race');if(vr!=null)RACE=vr;
+  computeCurrent();setInputsFromState();setDateInputs();setNameInputs();buildMonthNav();renderAll();
 }
 function setDateInputs(){const sd=document.getElementById('startDate'),rd=document.getElementById('raceDate');if(sd)sd.value=START;if(rd)rd.value=toISO(raceDate());}
-function afterDateChange(){save('vilde-hm-start',START);computeCurrent();selWeek=curWeek;setDateInputs();buildWeekNav();highlightNav();renderAll();}
-async function save(key,val){try{await window.storage.set(key,JSON.stringify(val));}catch(e){}}
-function renderAll(){renderProgress();buildToday();renderWeek(selWeek);renderCalc();updateTempoBar();updateHeader();}
+function afterDateChange(){save('vilde-hm-start',START);computeCurrent();setDateInputs();buildMonthNav();highlightNav();renderAll();}
+async function save(key,val){try{await Store.set(key,JSON.stringify(val));}catch(e){}}
+function renderAll(){applyNames();renderProgress();buildToday();renderMonth(selMonth);renderCalc();updateTempoBar();updateHeader();}
 
 function effList(){const a=[];WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(effDay(wi,di).t!=='rest')a.push(sid(w.n,di));}));return a;}
 function renderProgress(){const list=effList();const tot=list.length;const c=list.filter(id=>done[id]).length;document.getElementById('progFill').style.width=(tot?c/tot*100:0)+'%';document.getElementById('progTxt').textContent=c+' av '+tot+' økter fullført';}
@@ -321,8 +368,11 @@ function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];save('vilde-
 
 function updateHeader(){const rd=raceDate();const diff=Math.round((rd-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');document.getElementById('raceLabel').textContent=fmtShort(rd);}
 
-let curWeek=0,curDayIdx=-1,selWeek=0;
-function computeCurrent(){curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}}
+let curWeek=0,curDayIdx=-1,selMonth=0,MONTHS=[];
+function monthKeyOf(wi){const d=dayDate(wi,0);return d.getFullYear()*12+d.getMonth();}
+function computeMonths(){MONTHS=[];const idx={};WEEKS.forEach((w,wi)=>{const k=monthKeyOf(wi);if(!(k in idx)){idx[k]=MONTHS.length;MONTHS.push({date:dayDate(wi,0),weeks:[]});}MONTHS[idx[k]].weeks.push(wi);});}
+function monthOfWeek(wi){for(let i=0;i<MONTHS.length;i++)if(MONTHS[i].weeks.indexOf(wi)>=0)return i;return 0;}
+function computeCurrent(){curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
 
 function updateTempoBar(){document.getElementById('tempoBarVal').textContent=tenKLabel();}
 
@@ -344,33 +394,48 @@ function buildToday(){
   }
 }
 
-function buildWeekNav(){
+function buildMonthNav(){
   const nav=document.getElementById('weeknav');nav.innerHTML='';
-  WEEKS.forEach((w,wi)=>{const b=document.createElement('div');
-    b.className='wpill'+(wi===selWeek?' sel':'')+(w.taper?' taper':'');
-    b.innerHTML=`<div class="wt">${w.taper?'TAP':'U'+w.n}</div><div class="wd">${fmtShort(dayDate(wi,0))}</div>`;
-    b.onclick=()=>{selWeek=wi;renderWeek(wi);highlightNav();};nav.appendChild(b);});
+  MONTHS.forEach((m,mi)=>{const b=document.createElement('div');
+    b.className='wpill'+(mi===selMonth?' sel':'');
+    b.innerHTML=`<div class="wt">M${mi+1}</div><div class="wd">${MONFULL[m.date.getMonth()]}</div>`;
+    b.onclick=()=>{selMonth=mi;renderMonth(mi);highlightNav();};nav.appendChild(b);});
 }
-function highlightNav(){[...document.getElementById('weeknav').children].forEach((c,i)=>c.classList.toggle('sel',i===selWeek));}
+function highlightNav(){[...document.getElementById('weeknav').children].forEach((c,i)=>c.classList.toggle('sel',i===selMonth));}
 
-function renderWeek(wi){
-  const w=WEEKS[wi];
-  document.getElementById('weekhead').innerHTML=`<div class="wk">Uke ${w.n}${w.taper?'<span class="taperbadge">Tapering</span>':''}</div><div class="rng">${fmtShort(dayDate(wi,0))} – ${fmtShort(dayDate(wi,6))}</div>`;
+function shortLabel(t){return ({rest:'Hvile',rolig:'Rolig',mod:'Moderat',long:'Langtur',thr:'Terskel',vo2:'VO\u2082max',race:'Løp'})[t]||t;}
+function compactDur(x){return (x||'').replace(/(\d+)\s*min\s*pause/gi,'$1mp').replace(/\s*min\b/gi,'min').replace(/\s*sek\b/gi,'s');}
+function dayCell(wi,di){
+  const w=WEEKS[wi];const d=effDay(wi,di);const dt=dayDate(wi,di);const col=COLORS[d.t];const id=sid(w.n,di);
+  const isToday=(wi===curWeek&&di===curDayIdx);const cmt=comments[id];const isDone=!!done[id];
+  const cell=document.createElement('div');
+  cell.className='cell '+(d.t==='rest'?'rest':'')+(isToday?' today-c':'')+(isDone?' done-c':'');
+  cell.style.borderTopColor=col;
+  let body;
+  if(d.t==='rest'){body=`<div class="cs rest">Hvile</div>`;}
+  else{body=`<div class="cs"><span class="dot" style="background:${col}"></span><span class="lab">${shortLabel(d.t)}${d.custom?' *':''}</span></div>${d.d?`<div class="cd">${esc(compactDur(d.d))}</div>`:''}`;}
+  cell.innerHTML=`<div class="cdate">${dt.getDate()}.</div>${body}${isDone?'<div class="ck"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div>':''}${cmt?`<div class="cnote">${NOTE}</div>`:''}`;
+  cell.onclick=()=>openSheet(wi,di);
+  return cell;
+}
+function renderMonth(mi){
+  const m=MONTHS[mi];if(!m)return;const d=m.date;const ws=m.weeks;
+  const firstN=WEEKS[ws[0]].n,lastN=WEEKS[ws[ws.length-1]].n;
+  document.getElementById('weekhead').innerHTML=`<div class="wk">${MONFULL[d.getMonth()]} ${d.getFullYear()}</div><div class="rng">Uke ${firstN}${lastN!==firstN?'–'+lastN:''}</div>`;
   const list=document.getElementById('dayList');list.innerHTML='';
-  w.days.forEach((bd,di)=>{
-    const d=effDay(wi,di);const dt=dayDate(wi,di);const tp=TYPE[d.t];const col=COLORS[d.t];const id=sid(w.n,di);
-    const isToday=(wi===curWeek&&di===curDayIdx);const cmt=comments[id];
-    const row=document.createElement('div');
-    row.className='day '+(d.t==='rest'?'rest':'')+(d.t==='race'?' race':'')+(done[id]?' done':'')+(isToday?' today-row':'');
-    const cmtHtml=cmt?`<div class="cmt">${NOTE}<span>${esc(cmt)}</span></div>`:'';
-    let mid;
-    if(d.t==='rest'){mid=`<div class="ttl">Hvile</div><div class="addhint">+ Legg til økt</div>${cmtHtml}`;}
-    else{mid=`<div class="ttl"><span class="dot" style="background:${col}"></span>${tp.label}${d.custom?' <span class="tagx">Egen</span>':''}</div><div class="det">${esc(d.d)}</div><div class="pc">${paceStr(d)}</div>${cmtHtml}`;}
-    row.innerHTML=`<div class="rail" style="background:${col}"></div><div class="date"><div class="dow">${DOW[di]}</div><div class="dnum">${dt.getDate()}</div></div><div class="main">${mid}</div><div class="chk"><div class="box"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div></div>`;
-    row.querySelector('.main').onclick=()=>openSheet(wi,di);
-    if(d.t!=='rest')row.querySelector('.chk').onclick=(e)=>{e.stopPropagation();toggle(id);};
-    list.appendChild(row);
+  const wrap=document.createElement('div');wrap.className='calwrap';
+  const grid=document.createElement('div');grid.className='calgrid';
+  grid.style.gridTemplateColumns='30px repeat(7,minmax(40px,1fr))';
+  grid.appendChild(document.createElement('div')); // corner
+  for(let di=0;di<7;di++){const h=document.createElement('div');h.className='calhd-day'+((di>=5)?' we':'');h.textContent=DOW[di];grid.appendChild(h);}
+  ws.forEach(wi=>{
+    const w=WEEKS[wi];
+    const lbl=document.createElement('div');lbl.className='calwk';
+    lbl.innerHTML=`U${w.n}${w.taper?'<span class="tp">T</span>':''}`;
+    grid.appendChild(lbl);
+    for(let di=0;di<7;di++)grid.appendChild(dayCell(wi,di));
   });
+  wrap.appendChild(grid);list.appendChild(wrap);
 }
 
 // ---- sheets ----
@@ -462,12 +527,14 @@ function onInput(){
   const warn=document.getElementById('warnRow');
   if(t<1200||t>7200){warn.classList.add('show');document.getElementById('saveRow').classList.remove('show');return;}
   warn.classList.remove('show');T10K=t;
-  renderCalc();buildToday();renderWeek(selWeek);updateTempoBar();save('vilde-hm-10k',T10K);
+  renderCalc();buildToday();renderMonth(selMonth);updateTempoBar();save('vilde-hm-10k',T10K);
   const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
 }
 ['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
 document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;START=toISO(snapToMonday(new Date(v+'T00:00:00')));afterDateChange();});
 document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const m=snapToMonday(new Date(v+'T00:00:00'));START=toISO(addDays(toISO(m),-(PROG_DAYS-6)));afterDateChange();});
+document.getElementById('personName').addEventListener('input',()=>{PERSON=document.getElementById('personName').value;save('vilde-hm-person',PERSON);applyNames();});
+document.getElementById('raceName').addEventListener('input',()=>{RACE=document.getElementById('raceName').value;save('vilde-hm-race',RACE);applyNames();renderMonth(selMonth);buildToday();});
 
 document.getElementById('tempoBar').onclick=()=>{document.querySelector('.nav button[data-v="calc"]').click();};
 document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+b.dataset.v).classList.add('on');window.scrollTo(0,0);};});
