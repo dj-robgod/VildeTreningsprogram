@@ -129,6 +129,7 @@
 .gcard .gh{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
 .gcard .gh .dot{width:9px;height:9px;border-radius:99px}
 .gcard .grange{font-size:12px;color:var(--pine);font-weight:600;margin-left:auto;font-family:'Oswald'}
+.gcard .gpace{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px}
 .gcard p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:7px}
 .tips{background:var(--pine-soft);border:1px solid #D2DED7;border-radius:14px;padding:14px 16px 6px;margin-bottom:18px}
 .tips h3{font-family:'Oswald';font-size:14px;letter-spacing:.04em;margin-bottom:8px;color:var(--pine)}
@@ -159,6 +160,7 @@
 .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical}
 .field input:focus,.field textarea:focus{outline:none;border-color:var(--pine)}
 .field textarea{min-height:64px}
+.progsel{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 12px;font-family:inherit;font-size:14px;color:var(--ink);-webkit-appearance:none;appearance:none}
 .typegrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .typebtn{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--card);border-radius:11px;padding:10px 12px;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink)}
 .typebtn .dot{width:10px;height:10px;border-radius:99px;flex:none}
@@ -179,7 +181,7 @@
     <h1 id="appTitle">Vilde → Trondheim Maraton</h1>
     <div class="meta">
       <div class="stat"><div class="n tnum" id="countdown">–</div><div class="l">dager igjen</div></div>
-      <div class="stat"><div class="n tnum" id="raceLabel">6. sep</div><div class="l">løpsdag · måltid 2:05</div></div>
+      <div class="stat"><div class="n tnum" id="raceLabel">6. sep</div><div class="l">løpsdag · måltid <span id="goalLabel">2:05</span></div></div>
     </div>
     <div class="prog-wrap">
       <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -228,10 +230,18 @@
   </div>
 
   <div class="view" id="view-oppsett">
+    <div class="secttl">Program</div>
+    <div class="calc-in">
+      <div class="field" style="margin-top:0"><label>Aktivt program</label><select id="progSelect" class="progsel"></select></div>
+      <div class="field"><label>Navn på programmet</label><input type="text" id="progName" placeholder="Programnavn"></div>
+      <button class="addbtn" id="newProgBtn" style="margin-top:14px">+ Nytt program (kopi)</button>
+      <div class="linkbtns" style="margin-top:10px"><button class="delbtn" id="delProgBtn">Slett dette programmet</button></div>
+    </div>
     <div class="secttl">Deltaker & løp</div>
     <div class="calc-in">
       <div class="field" style="margin-top:0"><label>Navn på utøver</label><input type="text" id="personName" placeholder="Navn"></div>
       <div class="field"><label>Navn på løpet</label><input type="text" id="raceName" placeholder="Navn på løpet"></div>
+      <div class="field"><label>Måltid (sluttid)</label><input type="text" id="goalInput" placeholder="f.eks. 2:05"></div>
     </div>
     <div class="secttl">Programdatoer</div>
     <div class="calc-in">
@@ -267,17 +277,17 @@ function S(t,d,lo,hi,pre,post){return {t,d:d||'',lo:lo||0,hi:hi||0,pre:pre||'',p
 const R={t:'rest'};
 const PT='Pratetempo · ';
 const WEEKS=[
- {n:1,days:[R,R,S('rolig','7K',8.5,8.5),R,S('thr','5×5 min, 1 min pause',10.5,10.6),R,S('rolig','6K',8.1,8.6,PT)]},
- {n:2,days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R]},
- {n:3,days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
- {n:4,days:[R,S('rolig','7K',8.1,8.6,PT),R,S('thr','30×45/15 sek',11.6,13.5),R,S('long','12K',9.5,10.5,'Prog ',' + 2×1 km'),R]},
- {n:5,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 3×1 km'),R]},
- {n:6,days:[R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','7K',8.1,8.6,PT),R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R]},
- {n:7,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K',9.5,10.5,'Prog ',' + 4×1 km'),R]},
- {n:8,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
- {n:9,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 2×2 km'),R]},
- {n:10,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','16K',9.5,10.5,'Prog ',' + 3×2 km'),R]},
- {n:11,taper:true,days:[R,S('rolig','5K',8.1,8.6,PT),R,S('thr','3×6 min, 1 min pause',10.6,11.1),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
+ {n:1,days:[R,R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×5 min, 1 min pause',10.6,11.1),R,S('rolig','8K',8.1,8.6,PT)]},
+ {n:2,days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','8K',8.1,8.6,PT),R]},
+ {n:3,days:[R,S('long','12K',9.5,10.5,'Prog '),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('rolig','8K',8.1,8.6,PT),R]},
+ {n:4,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','2×5 min, 1 min pause',10.6,11.1),S('thr','5×800m, 1 min pause',10.6,11.1),R,S('long','12K',9.5,10.5,'Prog ')]},
+ {n:5,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×1k, 1 min pause',10.6,11.1),R,R,S('long','14K inkl 2×1km drag',9.5,10.5,'Prog ')]},
+ {n:6,days:[R,R,R,R,R,R,R]},
+ {n:7,days:[R,S('rolig','8K',8.1,8.6,PT),R,S('thr','6×6 min, 1 min pause',10.6,11.1),R,S('long','14K inkl 2-3×1K',9.5,10.5,'Prog '),R]},
+ {n:8,days:[S('long','11K',9.5,10.5,'Prog '),R,S('thr','5×1,5K, 1 min pause',10.6,11.1),R,S('long','16K inkl 2-3×1K',9.5,10.5,'Prog '),R,R]},
+ {n:9,days:[R,R,R,S('mod','Prog lårtest: 10-10-15min',9.5,10.0),R,S('thr','10k inkl 2×1,5km',10.6,11.1),R]},
+ {n:10,days:[S('rolig','7K',8.1,8.6,PT),S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('long','16K inkl 3+2km @ HMP+',9.5,10.5,'Prog '),R,S('rolig','5K',8.1,8.6,PT)]},
+ {n:11,taper:true,days:[S('thr','4-5×1,5km, 1 min pause',10.6,11.1),R,R,S('rolig','5K',8.1,8.6,PT),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
 ];
 
 const PRESET={
@@ -289,11 +299,11 @@ const PRESET={
 };
 
 const GUIDE=[
- {z:'rolig',title:'Rolig / pratetempo',range:'8,1–8,6 km/t',txt:'Skal foregå i pratetempo – du skal kunne snakke i lange setninger uten problem, og ikke hive etter pusten. Veldig behagelig i pust og puls. Hør på lydbok eller podkast og nyt turen. Ta gjerne disse på sti eller grus i marka.'},
- {z:'mod',title:'Moderat',range:'9,5–10 km/t',txt:'Litt tyngre enn pratetempo – du snakker i kortere setninger. Samtidig lettere intensitet enn terskelintervaller.'},
- {z:'long',title:'Langtur',range:'Prog 9,5–10,5 km/t',txt:'Nøkkeløkt for å bygge herding i bena og tåle distansen. De første ukene øker disse mye og kan oppleves belastende. Begynn i rolig tempo og jogg deg progressivt inn i fart. Skal totalt sett være hardere enn en rolig økt, med innlagte raskere kilometer på slutten.'},
- {z:'thr',title:'Terskelintervall',range:'10,6–11,1 km/t',txt:'Skal kjennes litt tungt, men langt fra følelsen av å ta deg helt ut. Når du er ferdig skal du føle at du kunne tatt 2 drag til. Pausene tas etter hvert drag – f.eks. 6×6 min, 1 min pause: 6 min drag, 1 min pause, og så videre.'},
- {z:'vo2',title:'VO₂max-intervall',range:'12,1–12,6 km/t',txt:'Skal kjennes veldig tungt. Etter hvert drag skal du trenge pausen – kanskje så hardt at du kjenner behov for å hvile armene på knærne. Programmert likt (f.eks. 4×4 min) for å gjøre progresjonen målbar.'},
+ {z:'rolig',title:'Rolig / pratetempo',lo:8.1,hi:8.6,txt:'Skal foregå i pratetempo – du skal kunne snakke i lange setninger uten problem, og ikke hive etter pusten. Veldig behagelig i pust og puls. Hør på lydbok eller podkast og nyt turen. Ta gjerne disse på sti eller grus i marka.'},
+ {z:'mod',title:'Moderat',lo:9.5,hi:10.0,txt:'Litt tyngre enn pratetempo – du snakker i kortere setninger. Samtidig lettere intensitet enn terskelintervaller.'},
+ {z:'long',title:'Langtur',lo:9.5,hi:10.5,pre:'Prog ',txt:'Nøkkeløkt for å bygge herding i bena og tåle distansen. De første ukene øker disse mye og kan oppleves belastende. Begynn i rolig tempo og jogg deg progressivt inn i fart. Skal totalt sett være hardere enn en rolig økt, med innlagte raskere kilometer på slutten.'},
+ {z:'thr',title:'Terskelintervall',lo:10.6,hi:11.1,txt:'Skal kjennes litt tungt, men langt fra følelsen av å ta deg helt ut. Når du er ferdig skal du føle at du kunne tatt 2 drag til. Pausene tas etter hvert drag – f.eks. 6×6 min, 1 min pause: 6 min drag, 1 min pause, og så videre.'},
+ {z:'vo2',title:'VO₂max-intervall',lo:12.1,hi:12.6,txt:'Skal kjennes veldig tungt. Etter hvert drag skal du trenge pausen – kanskje så hardt at du kjenner behov for å hvile armene på knærne. Programmert likt (f.eks. 4×4 min) for å gjøre progresjonen målbar.'},
  {z:'race',title:'Oppvarming & nedjogg',range:'',txt:'Oppvarming: 8–12 min progressivt. Start i rolig/pratetempo og øk gradvis mot ca. 1–2 km/t under intervallfart. Ta 1–2 min pause før intervallene. Nedjogg: 0–5 min degressivt og lett – ikke legg for mye i det.'}
 ];
 const TIPS=[
@@ -314,9 +324,9 @@ function fmtTime(sec){sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.fl
 function paceOf(kmh){return fmtTime(3600/kmh);}
 function num(kmh){return kmh.toFixed(1).replace('.',',');}
 
-let T10K=55*60;
+let T10K=52*60;
 let START='2026-06-22';
-let PERSON='Vilde',RACE='Trondheim Maraton';
+let PERSON='Vilde Thug',RACE='Trondheim Maraton';
 const PROG_DAYS=(WEEKS.length-1)*7+6;
 function toISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function dayDate(wi,di){return addDays(START,wi*7+di);}
@@ -327,6 +337,7 @@ function setNameInputs(){const a=document.getElementById('personName'),b=documen
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
 function paceStr(d){
+  if(d.t==='race')return 'Måltid: '+GOAL;
   if(d.fixed)return d.fixed;
   if(!d.lo)return '';
   const f=factor(),lo=d.lo*f,hi=d.hi*f;
@@ -336,7 +347,8 @@ function paceStr(d){
 }
 
 // ---- state ----
-let done={},overrides={},comments={};
+let done={w1d2:1,w1d4:1,w1d6:1,w2d0:1,w2d3:1,w2d5:1,w3d1:1,w3d3:1,w3d5:1,w4d1:1,w4d3:1,w4d4:1,w4d6:1,w5d1:1,w5d3:1,w5d6:1,w7d1:1,w7d3:1,w7d5:1,w8d0:1,w8d2:1,w9d3:1,w9d5:1,w10d0:1,w10d1:1,w10d4:1,w10d6:1,w11d0:1,w11d3:1,w11d6:1},overrides={},comments={};
+let GOAL='2:05',PROGNAME='Program 1',activeId=null,REG={active:null,list:[]};
 function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
@@ -346,28 +358,48 @@ return{
  async get(k){if(ws){try{const r=await ws.get(k);return (r&&r.value!=null)?r.value:null;}catch(e){}}if(ls){try{return ls.getItem(k);}catch(e){}}return null;},
  async set(k,v){if(ws){try{await ws.set(k,v);return;}catch(e){}}if(ls){try{ls.setItem(k,v);}catch(e){}}}
 };})();
+async function getJSON(k){try{const v=await Store.get(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+async function setJSON(k,v){try{await Store.set(k,JSON.stringify(v));}catch(e){}}
+function collectProgram(){return {name:PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,done:done,overrides:overrides,comments:comments};}
+function applyProgram(o){o=o||{};PERSON=o.person!=null?o.person:'Vilde Thug';RACE=o.race!=null?o.race:'Trondheim Maraton';GOAL=o.goal!=null?o.goal:'2:05';START=o.start||'2026-06-22';T10K=o.t10k!=null?o.t10k:52*60;done=o.done||{};overrides=o.overrides||{};comments=o.comments||{};PROGNAME=o.name||'Program';}
+async function persist(){if(!activeId)return;await setJSON('prog:'+activeId,collectProgram());const it=REG.list.find(x=>x.id===activeId);if(it&&it.name!==PROGNAME){it.name=PROGNAME;await setJSON('programs',REG);}}
+function refreshAll(){computeCurrent();buildProgramSelect();setInputsFromState();setDateInputs();setNameInputs();setGoalInput();buildMonthNav();renderAll();}
+function buildProgramSelect(){const sel=document.getElementById('progSelect');if(!sel)return;sel.innerHTML='';REG.list.forEach(pp=>{const o=document.createElement('option');o.value=pp.id;o.textContent=pp.name;if(pp.id===activeId)o.selected=true;sel.appendChild(o);});const pn=document.getElementById('progName');if(pn)pn.value=PROGNAME;const del=document.getElementById('delProgBtn');if(del)del.style.display=REG.list.length>1?'':'none';}
+function setGoalInput(){const g=document.getElementById('goalInput');if(g)g.value=GOAL;}
+async function switchProgram(id){await persist();activeId=id;REG.active=id;await setJSON('programs',REG);applyProgram(await getJSON('prog:'+id));refreshAll();}
+async function createProgram(){await persist();const id='p'+Date.now().toString(36);const copy={name:'Kopi av '+PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,done:{},overrides:JSON.parse(JSON.stringify(overrides||{})),comments:{}};await setJSON('prog:'+id,copy);REG.list.push({id,name:copy.name});REG.active=id;activeId=id;await setJSON('programs',REG);applyProgram(copy);refreshAll();document.getElementById('progName').focus();}
+async function deleteProgram(){if(REG.list.length<=1)return;let ok=true;try{ok=confirm('Slette programmet \"'+PROGNAME+'\"? Dette kan ikke angres.');}catch(e){ok=true;}if(!ok)return;await setJSON('prog:'+activeId,null);REG.list=REG.list.filter(x=>x.id!==activeId);activeId=REG.list[0].id;REG.active=activeId;await setJSON('programs',REG);applyProgram(await getJSON('prog:'+activeId));refreshAll();}
 async function loadState(){
-  const g=async(k)=>{try{const v=await Store.get(k);return v?JSON.parse(v):null;}catch(e){return null;}};
-  const vs=await g('vilde-hm-start');if(vs)START=vs;
-  const vt=await g('vilde-hm-10k');if(vt!=null)T10K=vt;
-  const vd=await g('vilde-hm-done');if(vd)done=vd;
-  const vo=await g('vilde-hm-overrides');if(vo)overrides=vo;
-  const vc=await g('vilde-hm-comments');if(vc)comments=vc;
-  const vp=await g('vilde-hm-person');if(vp!=null)PERSON=vp;
-  const vr=await g('vilde-hm-race');if(vr!=null)RACE=vr;
-  computeCurrent();setInputsFromState();setDateInputs();setNameInputs();buildMonthNav();renderAll();
+  let reg=await getJSON('programs');
+  if(!reg){
+    const g=async(k)=>await getJSON(k);
+    const vs=await g('vilde-hm-start');if(vs)START=vs;
+    const vt=await g('vilde-hm-10k');if(vt!=null)T10K=vt;
+    const vd=await g('vilde-hm-done');if(vd)done=vd;
+    const vo=await g('vilde-hm-overrides');if(vo)overrides=vo;
+    const vc=await g('vilde-hm-comments');if(vc)comments=vc;
+    const vp=await g('vilde-hm-person');if(vp!=null)PERSON=vp;
+    const vr=await g('vilde-hm-race');if(vr!=null)RACE=vr;
+    activeId='p1';PROGNAME=(RACE?PERSON+' – '+RACE:'Program 1');
+    REG={active:activeId,list:[{id:activeId,name:PROGNAME}]};
+    await setJSON('prog:'+activeId,collectProgram());await setJSON('programs',REG);
+  }else{
+    REG=reg;activeId=reg.active||(reg.list[0]&&reg.list[0].id);
+    applyProgram(await getJSON('prog:'+activeId));
+  }
+  refreshAll();
 }
 function setDateInputs(){const sd=document.getElementById('startDate'),rd=document.getElementById('raceDate');if(sd)sd.value=START;if(rd)rd.value=toISO(raceDate());}
-function afterDateChange(){save('vilde-hm-start',START);computeCurrent();setDateInputs();buildMonthNav();highlightNav();renderAll();}
+function afterDateChange(){persist();computeCurrent();setDateInputs();buildMonthNav();highlightNav();renderAll();}
 async function save(key,val){try{await Store.set(key,JSON.stringify(val));}catch(e){}}
-function renderAll(){applyNames();renderProgress();buildToday();renderMonth(selMonth);renderCalc();updateTempoBar();updateHeader();}
+function renderAll(){applyNames();renderProgress();buildToday();renderMonth(selMonth);renderCalc();renderGuide();updateTempoBar();updateHeader();}
 
 function effList(){const a=[];WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(effDay(wi,di).t!=='rest')a.push(sid(w.n,di));}));return a;}
 function renderProgress(){const list=effList();const tot=list.length;const c=list.filter(id=>done[id]).length;document.getElementById('progFill').style.width=(tot?c/tot*100:0)+'%';document.getElementById('progTxt').textContent=c+' av '+tot+' økter fullført';}
 
-function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];save('vilde-hm-done',done);renderAll();}
+function toggle(id){done[id]=!done[id];if(!done[id])delete done[id];persist();renderAll();}
 
-function updateHeader(){const rd=raceDate();const diff=Math.round((rd-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');document.getElementById('raceLabel').textContent=fmtShort(rd);}
+function updateHeader(){const rd=raceDate();const diff=Math.round((rd-todayMid())/86400000);document.getElementById('countdown').textContent=diff>0?diff:(diff===0?'I dag!':'Fullført');document.getElementById('raceLabel').textContent=fmtShort(rd);const gl=document.getElementById('goalLabel');if(gl)gl.textContent=GOAL;}
 
 let curWeek=0,curDayIdx=-1,selMonth=0,MONTHS=[];
 function monthKeyOf(wi){const d=dayDate(wi,0);return d.getFullYear()*12+d.getMonth();}
@@ -450,7 +482,7 @@ function closeSheet(){document.getElementById('scrim').classList.remove('on');re
 document.getElementById('scrim').onclick=(e)=>{if(e.target.id==='scrim')closeSheet();};
 
 function commentBlock(id){return `<div class="field"><label>Din kommentar</label><textarea id="cmtBox" placeholder="Hvordan gikk økta? Følelse, vær, justeringer …">${esc(comments[id]||'')}</textarea></div>`;}
-function bindComment(id){const t=document.getElementById('cmtBox');if(!t)return;t.addEventListener('input',()=>{const v=t.value.trim();if(v)comments[id]=v;else delete comments[id];save('vilde-hm-comments',comments);});}
+function bindComment(id){const t=document.getElementById('cmtBox');if(!t)return;t.addEventListener('input',()=>{const v=t.value.trim();if(v)comments[id]=v;else delete comments[id];persist();});}
 
 function renderDetailSheet(wi,di,d){
   const w=WEEKS[wi];const tp=TYPE[d.t];const col=COLORS[d.t];const dt=dayDate(wi,di);const id=sid(w.n,di);
@@ -474,7 +506,7 @@ function renderDetailSheet(wi,di,d){
   document.getElementById('dbtn').onclick=()=>{toggle(id);closeSheet();};
   document.getElementById('editBtn').onclick=()=>renderFormSheet(wi,di,true);
   document.getElementById('delBtn').onclick=()=>{deleteDay(wi,di);closeSheet();};
-  const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
+  const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{delete overrides[id];persist();closeSheet();};
 }
 
 function renderFormSheet(wi,di,isEdit){
@@ -499,20 +531,24 @@ function renderFormSheet(wi,di,isEdit){
     else{const p=PRESET[addType];lo=p.lo;hi=p.hi;pre=p.pre;post='';}
     const o={t:addType,d:document.getElementById('addDur').value.trim(),lo,hi,pre,post,custom:true};
     if(fixed)o.fixed=fixed;
-    overrides[id]=o;save('vilde-hm-overrides',overrides);closeSheet();
+    overrides[id]=o;persist();closeSheet();
   };
   const db=document.getElementById('delBtn2');if(db)db.onclick=()=>{deleteDay(wi,di);closeSheet();};
-  const rb=document.getElementById('restoreBtn');if(rb)rb.onclick=()=>{delete overrides[id];save('vilde-hm-overrides',overrides);closeSheet();};
+  const rb=document.getElementById('restoreBtn');if(rb)rb.onclick=()=>{delete overrides[id];persist();closeSheet();};
 }
 
-function deleteDay(wi,di){const id=sid(WEEKS[wi].n,di);if(baseDay(wi,di).t!=='rest')overrides[id]={del:1};else delete overrides[id];delete done[id];save('vilde-hm-overrides',overrides);save('vilde-hm-done',done);}
+function deleteDay(wi,di){const id=sid(WEEKS[wi].n,di);if(baseDay(wi,di).t!=='rest')overrides[id]={del:1};else delete overrides[id];delete done[id];persist();persist();}
 
 // ---- guide ----
-(function(){
-  const tl=document.getElementById('tipsList');TIPS.forEach(t=>{const li=document.createElement('li');li.textContent=t;tl.appendChild(li);});
-  const out=document.getElementById('guideOut');
-  GUIDE.forEach(g=>{const c=document.createElement('div');c.className='gcard';c.innerHTML=`<div class="gh"><span class="dot" style="background:${COLORS[g.z]}"></span>${g.title}${g.range?`<span class="grange">${g.range}</span>`:''}</div><p>${g.txt}</p>`;out.appendChild(c);});
-})();
+(function(){const tl=document.getElementById('tipsList');TIPS.forEach(t=>{const li=document.createElement('li');li.textContent=t;tl.appendChild(li);});})();
+function renderGuide(){
+  const f=factor();const out=document.getElementById('guideOut');out.innerHTML='';
+  GUIDE.forEach(g=>{let head='',pace='';
+    if(g.lo){const lo=g.lo*f,hi=g.hi*f;head=(g.pre||'')+num(lo)+'–'+num(hi)+' km/t';pace=paceOf(hi)+'–'+paceOf(lo)+' /km';}
+    const c=document.createElement('div');c.className='gcard';
+    c.innerHTML=`<div class="gh"><span class="dot" style="background:${COLORS[g.z]}"></span>${g.title}${head?`<span class="grange">${head}</span>`:''}</div>${pace?`<div class="gpace">${pace}</div>`:''}<p>${g.txt}</p>`;
+    out.appendChild(c);});
+}
 
 // ---- calculator ----
 const ZONES=[{z:'rolig',name:'Rolig',sub:'Pratetempo',lo:8.1,hi:8.6},{z:'mod',name:'Moderat',sub:'Litt tyngre',lo:9.5,hi:10.0},{z:'thr',name:'Terskel',sub:'Litt tungt',lo:10.6,hi:11.1},{z:'vo2',name:'VO₂max',sub:'Veldig tungt',lo:12.1,hi:12.6}];
@@ -535,14 +571,19 @@ function onInput(){
   const warn=document.getElementById('warnRow');
   if(t<1200||t>7200){warn.classList.add('show');document.getElementById('saveRow').classList.remove('show');return;}
   warn.classList.remove('show');T10K=t;
-  renderCalc();buildToday();renderMonth(selMonth);updateTempoBar();save('vilde-hm-10k',T10K);
+  renderCalc();renderGuide();buildToday();renderMonth(selMonth);updateTempoBar();persist();
   const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
 }
 ['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
 document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;START=toISO(snapToMonday(new Date(v+'T00:00:00')));afterDateChange();});
 document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const m=snapToMonday(new Date(v+'T00:00:00'));START=toISO(addDays(toISO(m),-(PROG_DAYS-6)));afterDateChange();});
-document.getElementById('personName').addEventListener('input',()=>{PERSON=document.getElementById('personName').value;save('vilde-hm-person',PERSON);applyNames();});
-document.getElementById('raceName').addEventListener('input',()=>{RACE=document.getElementById('raceName').value;save('vilde-hm-race',RACE);applyNames();renderMonth(selMonth);buildToday();});
+document.getElementById('personName').addEventListener('input',()=>{PERSON=document.getElementById('personName').value;persist();applyNames();});
+document.getElementById('raceName').addEventListener('input',()=>{RACE=document.getElementById('raceName').value;persist();applyNames();renderMonth(selMonth);buildToday();});
+document.getElementById('goalInput').addEventListener('input',()=>{GOAL=document.getElementById('goalInput').value;persist();renderMonth(selMonth);buildToday();updateHeader();});
+document.getElementById('progSelect').addEventListener('change',e=>switchProgram(e.target.value));
+document.getElementById('newProgBtn').onclick=()=>createProgram();
+document.getElementById('progName').addEventListener('input',()=>{PROGNAME=document.getElementById('progName').value;const it=REG.list.find(x=>x.id===activeId);if(it)it.name=PROGNAME||'Program';const sel=document.getElementById('progSelect');if(sel)[...sel.options].forEach(o=>{if(o.value===activeId)o.textContent=PROGNAME;});persist();});
+document.getElementById('delProgBtn').onclick=()=>deleteProgram();
 
 document.getElementById('tempoBar').onclick=()=>{document.querySelector('.nav button[data-v="calc"]').click();};
 document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+b.dataset.v).classList.add('on');window.scrollTo(0,0);};});
