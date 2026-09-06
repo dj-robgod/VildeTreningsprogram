@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C4A38">
+<title>Treningsprogram</title>
+</head>
+<body>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 :root{
@@ -141,9 +150,9 @@
 .nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav button span{font-size:9.5px;font-weight:600;letter-spacing:.01em}
 @media(min-width:521px){.nav{left:calc(50% - 260px)}}
-.scrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:50;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto}
+.scrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:50;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{background:var(--paper);width:100%;max-width:520px;border-top-left-radius:22px;border-top-right-radius:22px;padding:8px 20px 28px 24px;transform:translateY(20px);transition:.25s}
+.sheet{background:var(--paper);width:100%;max-width:520px;border-top-left-radius:22px;border-top-right-radius:22px;padding:8px 20px calc(28px + env(safe-area-inset-bottom)) 24px;transform:translateY(20px);transition:.25s;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .scrim.on .sheet{transform:translateY(0)}
 .grab{width:40px;height:4px;border-radius:99px;background:var(--line);margin:8px auto 14px}
 .sheet .dtag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
@@ -613,3 +622,5 @@ document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.que
 loadState();
 })();
 </script>
+</body>
+</html>
