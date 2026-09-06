@@ -177,7 +177,7 @@
 
 <div id="app">
   <div class="hdr">
-    <div class="eyebrow">Treningsprogram · Halvmaraton</div>
+    <div class="eyebrow" id="eyebrow">Treningsprogram · Halvmaraton</div>
     <h1 id="appTitle">Vilde → Trondheim Maraton</h1>
     <div class="meta">
       <div class="stat"><div class="n tnum" id="countdown">–</div><div class="l">dager igjen</div></div>
@@ -276,7 +276,7 @@ const NOTE='<svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10"/></svg>';
 function S(t,d,lo,hi,pre,post){return {t,d:d||'',lo:lo||0,hi:hi||0,pre:pre||'',post:post||''};}
 const R={t:'rest'};
 const PT='Pratetempo · ';
-const WEEKS=[
+const TEMPLATE=[
  {n:1,days:[R,R,S('rolig','7K',8.1,8.6,PT),R,S('thr','5×5 min, 1 min pause',10.6,11.1),R,S('rolig','8K',8.1,8.6,PT)]},
  {n:2,days:[S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('vo2','4×4 min, 3 min pause',12.1,12.6),R,S('rolig','8K',8.1,8.6,PT),R]},
  {n:3,days:[R,S('long','12K',9.5,10.5,'Prog '),R,S('thr','5×6 min, 1 min pause',10.6,11.1),R,S('rolig','8K',8.1,8.6,PT),R]},
@@ -289,6 +289,7 @@ const WEEKS=[
  {n:10,days:[S('rolig','7K',8.1,8.6,PT),S('vo2','4×4 min, 3 min pause',12.1,12.6),R,R,S('long','16K inkl 3+2km @ HMP+',9.5,10.5,'Prog '),R,S('rolig','5K',8.1,8.6,PT)]},
  {n:11,taper:true,days:[S('thr','4-5×1,5km, 1 min pause',10.6,11.1),R,R,S('rolig','5K',8.1,8.6,PT),R,R,(function(){var s=S('race','21,1 km');s.fixed='Måltid: 2:05';return s;})()]}
 ];
+let WEEKS=[],NWEEKS=11;
 
 const PRESET={
  rolig:{label:'Rolig',lo:8.1,hi:8.6,pre:PT},
@@ -327,12 +328,11 @@ function num(kmh){return kmh.toFixed(1).replace('.',',');}
 let T10K=52*60;
 let START='2026-06-22';
 let PERSON='Vilde Thug',RACE='Trondheim Maraton';
-const PROG_DAYS=(WEEKS.length-1)*7+6;
 function toISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function dayDate(wi,di){return addDays(START,wi*7+di);}
 function raceDate(){return dayDate(WEEKS.length-1,6);}
 function snapToMonday(d){const off=(d.getDay()+6)%7;return addDays(toISO(d),-off);}
-function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').trim()||'Løpet';TYPE.race.label=r;const t=document.getElementById('appTitle');if(t)t.textContent=p+' → '+r;}
+function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').trim()||'Løpet';TYPE.race.label=r;const t=document.getElementById('appTitle');if(t)t.textContent=p+' → '+r;const eb=document.getElementById('eyebrow');if(eb)eb.textContent='Treningsprogram '+r;}
 function setNameInputs(){const a=document.getElementById('personName'),b=document.getElementById('raceName');if(a)a.value=PERSON;if(b)b.value=RACE;}
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
@@ -352,16 +352,24 @@ let GOAL='2:05',PROGNAME='Program 1',activeId=null,REG={active:null,list:[]};
 function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
-const Store=(()=>{const ws=(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function')?window.storage:null;
-let ls=null;try{ls=window['localStorage'];ls.setItem('__hm_t','1');ls.removeItem('__hm_t');}catch(e){ls=null;}
-return{
- async get(k){if(ws){try{const r=await ws.get(k);return (r&&r.value!=null)?r.value:null;}catch(e){}}if(ls){try{return ls.getItem(k);}catch(e){}}return null;},
- async set(k,v){if(ws){try{await ws.set(k,v);return;}catch(e){}}if(ls){try{ls.setItem(k,v);}catch(e){}}}
-};})();
+const SUPA_URL='https://ehwohdjlevjktdomzxsr.supabase.co';
+const SUPA_KEY='sb_publishable_Dg__MMwYXHm1FFOTAT0znA_sVEl_O0d';
+const SUPA_H={'apikey':SUPA_KEY,'Content-Type':'application/json'};
+async function supaGet(k){try{const r=await fetch(SUPA_URL+'/rest/v1/kv?key=eq.'+encodeURIComponent(k)+'&select=value',{headers:SUPA_H});if(!r.ok)return undefined;const rows=await r.json();return rows.length?rows[0].value:null;}catch(e){return undefined;}}
+async function supaSet(k,v){try{const r=await fetch(SUPA_URL+'/rest/v1/kv?on_conflict=key',{method:'POST',headers:Object.assign({},SUPA_H,{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{key:k,value:v}])});return r.ok;}catch(e){return false;}}
+const Store=(()=>{
+  let ls=null;try{ls=window['localStorage'];ls.setItem('__hm_t','1');ls.removeItem('__hm_t');}catch(e){ls=null;}
+  const lget=k=>{if(ls){try{return ls.getItem(k);}catch(e){}}return null;};
+  const lset=(k,v)=>{if(ls){try{ls.setItem(k,v);}catch(e){}}};
+  return{
+    async get(k){const sv=await supaGet(k);if(sv!==undefined){if(sv!==null)lset(k,sv);return sv;}return lget(k);},
+    async set(k,v){lset(k,v);await supaSet(k,v);}
+  };
+})();
 async function getJSON(k){try{const v=await Store.get(k);return v?JSON.parse(v):null;}catch(e){return null;}}
 async function setJSON(k,v){try{await Store.set(k,JSON.stringify(v));}catch(e){}}
-function collectProgram(){return {name:PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,done:done,overrides:overrides,comments:comments};}
-function applyProgram(o){o=o||{};PERSON=o.person!=null?o.person:'Vilde Thug';RACE=o.race!=null?o.race:'Trondheim Maraton';GOAL=o.goal!=null?o.goal:'2:05';START=o.start||'2026-06-22';T10K=o.t10k!=null?o.t10k:52*60;done=o.done||{};overrides=o.overrides||{};comments=o.comments||{};PROGNAME=o.name||'Program';}
+function collectProgram(){return {name:PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,nweeks:NWEEKS,done:done,overrides:overrides,comments:comments};}
+function applyProgram(o){o=o||{};PERSON=o.person!=null?o.person:'Vilde Thug';RACE=o.race!=null?o.race:'Trondheim Maraton';GOAL=o.goal!=null?o.goal:'2:05';START=o.start||'2026-06-22';T10K=o.t10k!=null?o.t10k:52*60;done=o.done||{};overrides=o.overrides||{};comments=o.comments||{};NWEEKS=(o.nweeks&&o.nweeks>=1)?o.nweeks:11;PROGNAME=o.name||'Program';}
 async function persist(){if(!activeId)return;await setJSON('prog:'+activeId,collectProgram());const it=REG.list.find(x=>x.id===activeId);if(it&&it.name!==PROGNAME){it.name=PROGNAME;await setJSON('programs',REG);}}
 function refreshAll(){computeCurrent();buildProgramSelect();setInputsFromState();setDateInputs();setNameInputs();setGoalInput();buildMonthNav();renderAll();}
 function buildProgramSelect(){const sel=document.getElementById('progSelect');if(!sel)return;sel.innerHTML='';REG.list.forEach(pp=>{const o=document.createElement('option');o.value=pp.id;o.textContent=pp.name;if(pp.id===activeId)o.selected=true;sel.appendChild(o);});const pn=document.getElementById('progName');if(pn)pn.value=PROGNAME;const del=document.getElementById('delProgBtn');if(del)del.style.display=REG.list.length>1?'':'none';}
@@ -370,22 +378,34 @@ async function switchProgram(id){await persist();activeId=id;REG.active=id;await
 async function createProgram(){await persist();const id='p'+Date.now().toString(36);const copy={name:'Kopi av '+PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,done:{},overrides:JSON.parse(JSON.stringify(overrides||{})),comments:{}};await setJSON('prog:'+id,copy);REG.list.push({id,name:copy.name});REG.active=id;activeId=id;await setJSON('programs',REG);applyProgram(copy);refreshAll();document.getElementById('progName').focus();}
 async function deleteProgram(){if(REG.list.length<=1)return;let ok=true;try{ok=confirm('Slette programmet \"'+PROGNAME+'\"? Dette kan ikke angres.');}catch(e){ok=true;}if(!ok)return;await setJSON('prog:'+activeId,null);REG.list=REG.list.filter(x=>x.id!==activeId);activeId=REG.list[0].id;REG.active=activeId;await setJSON('programs',REG);applyProgram(await getJSON('prog:'+activeId));refreshAll();}
 async function loadState(){
-  let reg=await getJSON('programs');
-  if(!reg){
-    const g=async(k)=>await getJSON(k);
-    const vs=await g('vilde-hm-start');if(vs)START=vs;
-    const vt=await g('vilde-hm-10k');if(vt!=null)T10K=vt;
-    const vd=await g('vilde-hm-done');if(vd)done=vd;
-    const vo=await g('vilde-hm-overrides');if(vo)overrides=vo;
-    const vc=await g('vilde-hm-comments');if(vc)comments=vc;
-    const vp=await g('vilde-hm-person');if(vp!=null)PERSON=vp;
-    const vr=await g('vilde-hm-race');if(vr!=null)RACE=vr;
-    activeId='p1';PROGNAME=(RACE?PERSON+' – '+RACE:'Program 1');
-    REG={active:activeId,list:[{id:activeId,name:PROGNAME}]};
-    await setJSON('prog:'+activeId,collectProgram());await setJSON('programs',REG);
-  }else{
-    REG=reg;activeId=reg.active||(reg.list[0]&&reg.list[0].id);
+  const supaReg=await supaGet('programs'); // string=exists, null=empty(reachable), undefined=unreachable
+  if(typeof supaReg==='string'){
+    REG=JSON.parse(supaReg);
+    activeId=REG.active||(REG.list[0]&&REG.list[0].id);
     applyProgram(await getJSON('prog:'+activeId));
+  }else{
+    // Supabase has no data (or is unreachable) — establish state locally, then seed Supabase if reachable
+    let reg=await getJSON('programs');
+    if(reg){REG=reg;}
+    else{
+      const g=async(k)=>await getJSON(k);
+      const vs=await g('vilde-hm-start');if(vs)START=vs;
+      const vt=await g('vilde-hm-10k');if(vt!=null)T10K=vt;
+      const vd=await g('vilde-hm-done');if(vd)done=vd;
+      const vo=await g('vilde-hm-overrides');if(vo)overrides=vo;
+      const vc=await g('vilde-hm-comments');if(vc)comments=vc;
+      const vp=await g('vilde-hm-person');if(vp!=null)PERSON=vp;
+      const vr=await g('vilde-hm-race');if(vr!=null)RACE=vr;
+      activeId='p1';PROGNAME=(RACE?PERSON+' – '+RACE:'Program 1');
+      REG={active:activeId,list:[{id:activeId,name:PROGNAME}]};
+      await setJSON('prog:'+activeId,collectProgram());
+    }
+    activeId=REG.active||(REG.list[0]&&REG.list[0].id);
+    applyProgram(await getJSON('prog:'+activeId));
+    if(supaReg===null){ // reachable but empty -> push everything up so Supabase becomes source of truth
+      for(const it of REG.list){const b=await getJSON('prog:'+it.id);if(b)await supaSet('prog:'+it.id,JSON.stringify(b));}
+      await supaSet('programs',JSON.stringify(REG));
+    }
   }
   refreshAll();
 }
@@ -405,7 +425,9 @@ let curWeek=0,curDayIdx=-1,selMonth=0,MONTHS=[];
 function monthKeyOf(wi){const d=dayDate(wi,0);return d.getFullYear()*12+d.getMonth();}
 function computeMonths(){MONTHS=[];const idx={};WEEKS.forEach((w,wi)=>{const k=monthKeyOf(wi);if(!(k in idx)){idx[k]=MONTHS.length;MONTHS.push({date:dayDate(wi,0),weeks:[]});}MONTHS[idx[k]].weeks.push(wi);});}
 function monthOfWeek(wi){for(let i=0;i<MONTHS.length;i++)if(MONTHS[i].weeks.indexOf(wi)>=0)return i;return 0;}
-function computeCurrent(){curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
+function weeksBetween(startISO,raceDateObj){const a=new Date(startISO+'T00:00:00');const days=Math.round((raceDateObj-a)/86400000);return Math.round((days+1)/7);}
+function buildWeeks(){WEEKS=[];for(let i=0;i<NWEEKS;i++){let days;if(i<TEMPLATE.length){days=TEMPLATE[i].days.map(d=>d.t==='race'?{t:'rest'}:d);}else{days=[R,R,R,R,R,R,R];}WEEKS.push({n:i+1,taper:i===NWEEKS-1,days});}const last=WEEKS[NWEEKS-1];if(last)last.days[6]=S('race','21,1 km');}
+function computeCurrent(){buildWeeks();curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
 
 function updateTempoBar(){document.getElementById('tempoBarVal').textContent=tenKLabel();}
 
@@ -422,7 +444,7 @@ function buildToday(){
     el.style.cursor='pointer';
     el.onclick=()=>openSheet(curWeek,curDayIdx);
   }else{
-    el.innerHTML=`<div class="rail" style="background:var(--pine)"></div><div class="body"><div class="tag">Treningsprogram</div><h2>Klar?</h2><div class="pace">Programmet går 22. juni – 6. september 2026.</div></div>`;
+    el.innerHTML=`<div class="rail" style="background:var(--pine)"></div><div class="body"><div class="tag">Treningsprogram</div><h2>Klar?</h2><div class="pace">Programmet går ${fmtShort(dayDate(0,0))} – ${fmtShort(raceDate())}.</div></div>`;
     el.onclick=null;
   }
 }
@@ -575,8 +597,8 @@ function onInput(){
   const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
 }
 ['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
-document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;START=toISO(snapToMonday(new Date(v+'T00:00:00')));afterDateChange();});
-document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const m=snapToMonday(new Date(v+'T00:00:00'));START=toISO(addDays(toISO(m),-(PROG_DAYS-6)));afterDateChange();});
+document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;const ns=toISO(snapToMonday(new Date(v+'T00:00:00')));const raceSun=dayDate(NWEEKS-1,6);const nw=weeksBetween(ns,raceSun);START=ns;if(nw>=1)NWEEKS=Math.min(52,nw);afterDateChange();});
+document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const rs=addDays(toISO(snapToMonday(new Date(v+'T00:00:00'))),6);const nw=weeksBetween(START,rs);if(nw>=1)NWEEKS=Math.min(52,nw);afterDateChange();});
 document.getElementById('personName').addEventListener('input',()=>{PERSON=document.getElementById('personName').value;persist();applyNames();});
 document.getElementById('raceName').addEventListener('input',()=>{RACE=document.getElementById('raceName').value;persist();applyNames();renderMonth(selMonth);buildToday();});
 document.getElementById('goalInput').addEventListener('input',()=>{GOAL=document.getElementById('goalInput').value;persist();renderMonth(selMonth);buildToday();updateHeader();});
