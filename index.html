@@ -64,7 +64,7 @@
 .calhd-day.we{color:#B6713A}
 .calwk{display:flex;align-items:center;justify-content:center;gap:2px;font-family:'Oswald';font-size:13px;font-weight:600;color:var(--pine)}
 .calwk .tp{background:#F3E6CF;color:#9A6B12;border-radius:99px;padding:0 3px;font-size:8.5px;font-family:'Inter',sans-serif;font-weight:700}
-.cell{background:var(--card);border:1px solid var(--line);border-top-width:3px;border-radius:9px;padding:4px 4px 6px;min-height:70px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:1px;transition:.12s;overflow:hidden}
+.cell{background:var(--card);border:1px solid var(--line);border-top-width:3px;border-radius:9px;padding:4px 4px 6px;min-height:70px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:1px;transition:.12s;overflow:hidden;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 .cell:active{transform:scale(.97)}
 .cell.rest{background:#FBFAF6}
 .cell.today-c{outline:2px solid var(--pine);outline-offset:0}
@@ -182,6 +182,22 @@
 .delbtn,.resetbtn{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .delbtn{color:var(--danger);border-color:#E8CFC9}
 .resetbtn{color:var(--pine)}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:80%;text-align:center;box-shadow:0 6px 20px rgba(20,35,29,.25)}
+#toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
+#ctxscrim{position:fixed;inset:0;background:rgba(20,35,29,.42);z-index:55;opacity:0;pointer-events:none;transition:.15s;display:flex;align-items:center;justify-content:center;padding:24px}
+#ctxscrim.on{opacity:1;pointer-events:auto}
+.ctxmenu{background:var(--paper);border-radius:18px;width:100%;max-width:300px;padding:6px;box-shadow:0 14px 44px rgba(20,35,29,.32);transform:scale(.95);transition:.15s}
+#ctxscrim.on .ctxmenu{transform:scale(1)}
+.ctxmenu .ch{font-family:'Oswald';font-weight:600;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:11px 14px 8px}
+.ctxmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;padding:13px 14px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;border-radius:12px}
+.ctxmenu button:active{background:var(--pine-soft)}
+.ctxmenu button.danger{color:var(--danger)}
+.ctxmenu button .sub{font-weight:500;color:var(--muted);font-size:12.5px}
+.ctxmenu .dot{width:10px;height:10px;border-radius:99px;flex:none}
+#pastebar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--pine);color:#fff;padding:10px 12px 10px 16px;border-radius:14px;display:flex;align-items:center;gap:12px;z-index:58;opacity:0;pointer-events:none;transition:.2s;max-width:92%;box-shadow:0 8px 24px rgba(20,35,29,.3)}
+#pastebar.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+#pastebar span{font-size:12.5px;font-weight:600;line-height:1.2}
+#pastebar button{background:#fff;color:var(--pine);border:none;border-radius:9px;padding:8px 12px;font-family:'Oswald';font-weight:600;font-size:13px;cursor:pointer;flex:none}
 </style>
 
 <div id="app">
@@ -243,8 +259,8 @@
     <div class="calc-in">
       <div class="field" style="margin-top:0"><label>Aktivt program</label><select id="progSelect" class="progsel"></select></div>
       <div class="field"><label>Navn på programmet</label><input type="text" id="progName" placeholder="Programnavn"></div>
-      <button class="addbtn" id="newProgBtn" style="margin-top:14px">+ Nytt program (kopi)</button>
-      <div class="linkbtns" style="margin-top:10px"><button class="delbtn" id="delProgBtn">Slett dette programmet</button></div>
+      <button class="addbtn" id="newProgBtn" style="margin-top:14px">+ Nytt program</button>
+      <div class="linkbtns" style="margin-top:10px"><button class="resetbtn" id="clearProgBtn">Tøm program</button><button class="delbtn" id="delProgBtn">Slett dette programmet</button></div>
     </div>
     <div class="secttl">Deltaker & løp</div>
     <div class="calc-in">
@@ -271,6 +287,8 @@
   </div>
 </div>
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div id="ctxscrim"><div class="ctxmenu" id="ctxmenu"></div></div>
+<div id="pastebar"><span id="pastebarTxt"></span><button id="pastebarDone">Ferdig</button></div>
 
 <script>
 (function(){
@@ -341,7 +359,7 @@ function toISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-
 function dayDate(wi,di){return addDays(START,wi*7+di);}
 function raceDate(){return dayDate(WEEKS.length-1,6);}
 function snapToMonday(d){const off=(d.getDay()+6)%7;return addDays(toISO(d),-off);}
-function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').trim()||'Løpet';TYPE.race.label=r;const t=document.getElementById('appTitle');if(t)t.textContent=p+' → '+r;const eb=document.getElementById('eyebrow');if(eb)eb.textContent='Treningsprogram '+r;}
+function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').trim()||'Løpet';TYPE.race.label=r;const t=document.getElementById('appTitle');if(t)t.textContent=p+' → '+r;const eb=document.getElementById('eyebrow');if(eb)eb.textContent=(PROGNAME||'').trim()||'Treningsprogram';}
 function setNameInputs(){const a=document.getElementById('personName'),b=document.getElementById('raceName');if(a)a.value=PERSON;if(b)b.value=RACE;}
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
@@ -357,7 +375,7 @@ function paceStr(d){
 
 // ---- state ----
 let done={w1d2:1,w1d4:1,w1d6:1,w2d0:1,w2d3:1,w2d5:1,w3d1:1,w3d3:1,w3d5:1,w4d1:1,w4d3:1,w4d4:1,w4d6:1,w5d1:1,w5d3:1,w5d6:1,w7d1:1,w7d3:1,w7d5:1,w8d0:1,w8d2:1,w9d3:1,w9d5:1,w10d0:1,w10d1:1,w10d4:1,w10d6:1,w11d0:1,w11d3:1,w11d6:1},overrides={},comments={};
-let GOAL='2:05',PROGNAME='Program 1',activeId=null,REG={active:null,list:[]};
+let GOAL='2:05',PROGNAME='Program 1',activeId=null,REG={active:null,list:[]},clip=null,clipWeek=null,pasteMode=false;
 function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
@@ -384,7 +402,26 @@ function refreshAll(){computeCurrent();buildProgramSelect();setInputsFromState()
 function buildProgramSelect(){const sel=document.getElementById('progSelect');if(!sel)return;sel.innerHTML='';REG.list.forEach(pp=>{const o=document.createElement('option');o.value=pp.id;o.textContent=pp.name;if(pp.id===activeId)o.selected=true;sel.appendChild(o);});const pn=document.getElementById('progName');if(pn)pn.value=PROGNAME;const del=document.getElementById('delProgBtn');if(del)del.style.display=REG.list.length>1?'':'none';}
 function setGoalInput(){const g=document.getElementById('goalInput');if(g)g.value=GOAL;}
 async function switchProgram(id){await persist();activeId=id;REG.active=id;await setJSON('programs',REG);applyProgram(await getJSON('prog:'+id));refreshAll();}
-async function createProgram(){await persist();const id='p'+Date.now().toString(36);const copy={name:'Kopi av '+PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,done:{},overrides:JSON.parse(JSON.stringify(overrides||{})),comments:{}};await setJSON('prog:'+id,copy);REG.list.push({id,name:copy.name});REG.active=id;activeId=id;await setJSON('programs',REG);applyProgram(copy);refreshAll();document.getElementById('progName').focus();}
+async function createProgram(mode){
+  await persist();const id='p'+Date.now().toString(36);
+  let ov;
+  if(mode==='blank'){ov={};for(let wi=0;wi<NWEEKS;wi++)for(let di=0;di<7;di++){if(wi===NWEEKS-1&&di===6)continue;if(WEEKS[wi].days[di].t!=='rest')ov[sid(WEEKS[wi].n,di)]={del:1};}}
+  else{ov=JSON.parse(JSON.stringify(overrides||{}));}
+  const copy={name:(mode==='blank'?'Nytt program':'Kopi av '+PROGNAME),person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,nweeks:NWEEKS,done:{},overrides:ov,comments:{}};
+  await setJSON('prog:'+id,copy);REG.list.push({id,name:copy.name});REG.active=id;activeId=id;await setJSON('programs',REG);applyProgram(copy);refreshAll();document.getElementById('progName').focus();
+}
+function newProgramMenu(){
+  const m=document.getElementById('ctxmenu');
+  m.innerHTML='<div class="ch">Nytt program</div><button data-a="copy">Kopi av dette programmet</button><button data-a="blank">Tomt program (start blankt)</button>';
+  m.querySelectorAll('button').forEach(b=>{b.onclick=()=>{const a=b.dataset.a;closeCtx();createProgram(a);};});
+  document.getElementById('ctxscrim').classList.add('on');
+}
+async function clearProgram(){
+  let ok=true;try{ok=confirm('Tømme «'+PROGNAME+'»? Alle dager settes til hvile (løpsdagen beholdes). Fullføringer nullstilles.');}catch(e){ok=true;}
+  if(!ok)return;
+  for(let wi=0;wi<NWEEKS;wi++)for(let di=0;di<7;di++){const id=sid(WEEKS[wi].n,di);if(wi===NWEEKS-1&&di===6){delete overrides[id];continue;}if(baseDay(wi,di).t!=='rest')overrides[id]={del:1};else delete overrides[id];}
+  done={};persist();refreshAll();toast('Program tømt');
+}
 async function deleteProgram(){if(REG.list.length<=1)return;let ok=true;try{ok=confirm('Slette programmet \"'+PROGNAME+'\"? Dette kan ikke angres.');}catch(e){ok=true;}if(!ok)return;await setJSON('prog:'+activeId,null);REG.list=REG.list.filter(x=>x.id!==activeId);activeId=REG.list[0].id;REG.active=activeId;await setJSON('programs',REG);applyProgram(await getJSON('prog:'+activeId));refreshAll();}
 async function loadState(){
   const supaReg=await supaGet('programs'); // string=exists, null=empty(reachable), undefined=unreachable
@@ -469,6 +506,31 @@ function highlightNav(){[...document.getElementById('weeknav').children].forEach
 
 function shortLabel(t){return ({rest:'Hvile',rolig:'Rolig',mod:'Moderat',long:'Langtur',thr:'Terskel',vo2:'VO\u2082max',race:'Løp'})[t]||t;}
 function compactDur(x){return (x||'').replace(/(\d+)\s*min\s*pause/gi,'$1mp').replace(/\s*min\b/gi,'min').replace(/\s*sek\b/gi,'s');}
+function toast(msg){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),1700);}
+function clipLabel(){return clip?shortLabel(clip.t)+(clip.d?' · '+compactDur(clip.d):''):'';}
+function copySession(wi,di){const d=effDay(wi,di);if(d.t==='rest')return;clip={t:d.t,d:d.d||'',lo:d.lo||0,hi:d.hi||0,pre:d.pre||'',post:d.post||'',fixed:d.fixed};toast('Kopiert: '+clipLabel());}
+function pasteInto(wi,di){if(!clip)return;const id=sid(WEEKS[wi].n,di);const o={t:clip.t,d:clip.d,lo:clip.lo,hi:clip.hi,pre:clip.pre,post:clip.post,custom:true};if(clip.fixed)o.fixed=clip.fixed;overrides[id]=o;persist();}
+function weekCount(a){return a?a.filter(Boolean).length:0;}
+function copyWeek(wi){const arr=[];for(let di=0;di<7;di++){const d=effDay(wi,di);arr.push(d.t==='rest'?null:{t:d.t,d:d.d||'',lo:d.lo||0,hi:d.hi||0,pre:d.pre||'',post:d.post||'',fixed:d.fixed});}clipWeek=arr;toast('Uke kopiert ('+weekCount(arr)+' økter)');}
+function pasteWeek(wi){if(!clipWeek)return;for(let di=0;di<7;di++){const id=sid(WEEKS[wi].n,di);const c=clipWeek[di];const isRace=(wi===NWEEKS-1&&di===6);delete done[id];if(c){const o={t:c.t,d:c.d,lo:c.lo,hi:c.hi,pre:c.pre,post:c.post,custom:true};if(c.fixed)o.fixed=c.fixed;overrides[id]=o;}else if(isRace){delete overrides[id];}else if(baseDay(wi,di).t!=='rest'){overrides[id]={del:1};}else{delete overrides[id];}}persist();}
+function clearWeek(wi){for(let di=0;di<7;di++){const id=sid(WEEKS[wi].n,di);const isRace=(wi===NWEEKS-1&&di===6);delete done[id];if(isRace){delete overrides[id];}else if(baseDay(wi,di).t!=='rest'){overrides[id]={del:1};}else{delete overrides[id];}}persist();}
+function openWeekCtx(wi){
+  const w=WEEKS[wi];const m=document.getElementById('ctxmenu');let cnt=0;for(let di=0;di<7;di++)if(effDay(wi,di).t!=='rest')cnt++;
+  let html='<div class="ch">Uke '+w.n+'</div>';
+  html+='<button data-a="copyw">Kopier hele uken ('+cnt+' økter)</button>';
+  if(clipWeek)html+='<button data-a="pastew">Lim inn uke ('+weekCount(clipWeek)+' økter)</button>';
+  html+='<button data-a="clearw" class="danger">Tøm uken</button>';
+  m.innerHTML=html;
+  m.querySelectorAll('button').forEach(b=>{b.onclick=()=>{const a=b.dataset.a;closeCtx();
+    if(a==='copyw')copyWeek(wi);
+    else if(a==='pastew'){pasteWeek(wi);refreshAll();toast('Uke limt inn');}
+    else if(a==='clearw'){clearWeek(wi);refreshAll();toast('Uke tømt');}
+  };});
+  document.getElementById('ctxscrim').classList.add('on');
+}
+function showPasteBar(){document.getElementById('pastebarTxt').textContent='Lim inn-modus: trykk dager for å legge inn '+clipLabel();document.getElementById('pastebar').classList.add('on');}
+function enterPasteMode(){if(!clip)return;pasteMode=true;showPasteBar();}
+function exitPasteMode(){pasteMode=false;document.getElementById('pastebar').classList.remove('on');}
 function dayCell(wi,di){
   const w=WEEKS[wi];const d=effDay(wi,di);const dt=dayDate(wi,di);const col=COLORS[d.t];const id=sid(w.n,di);
   const isToday=(wi===curWeek&&di===curDayIdx);const cmt=comments[id];const isDone=!!done[id];
@@ -479,7 +541,12 @@ function dayCell(wi,di){
   if(d.t==='rest'){body=`<div class="cs rest">Hvile</div>`;}
   else{body=`<div class="cs"><span class="dot" style="background:${col}"></span><span class="lab">${shortLabel(d.t)}${d.custom?' *':''}</span></div>${d.d?`<div class="cd">${esc(compactDur(d.d))}</div>`:''}`;}
   cell.innerHTML=`<div class="cdate">${dt.getDate()}.</div>${body}${isDone?'<div class="ck"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div>':''}${cmt?`<div class="cnote">${NOTE}</div>`:''}`;
-  cell.onclick=()=>openSheet(wi,di);
+  let lpFired=false,lpTimer=null;
+  cell.onclick=()=>{if(lpFired){lpFired=false;return;}if(pasteMode&&clip){pasteInto(wi,di);renderAll();toast('Limt inn: '+clipLabel());return;}openSheet(wi,di);};
+  cell.oncontextmenu=(e)=>{e.preventDefault();openCtx(wi,di);};
+  cell.addEventListener('touchstart',()=>{if(lpTimer)clearTimeout(lpTimer);lpTimer=setTimeout(()=>{lpTimer=null;lpFired=true;openCtx(wi,di);if(navigator.vibrate){try{navigator.vibrate(12);}catch(e){}}},450);},{passive:true});
+  cell.addEventListener('touchmove',()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}},{passive:true});
+  cell.addEventListener('touchend',()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}},{passive:true});
   return cell;
 }
 function renderMonth(mi){
@@ -494,8 +561,10 @@ function renderMonth(mi){
   for(let di=0;di<7;di++){const h=document.createElement('div');h.className='calhd-day'+((di>=5)?' we':'');h.textContent=DOW[di];grid.appendChild(h);}
   ws.forEach(wi=>{
     const w=WEEKS[wi];
-    const lbl=document.createElement('div');lbl.className='calwk';
+    const lbl=document.createElement('div');lbl.className='calwk';lbl.style.cursor='pointer';
     lbl.innerHTML=`U${w.n}${w.taper?'<span class="tp">T</span>':''}`;
+    lbl.onclick=()=>openWeekCtx(wi);
+    lbl.oncontextmenu=(e)=>{e.preventDefault();openWeekCtx(wi);};
     grid.appendChild(lbl);
     for(let di=0;di<7;di++)grid.appendChild(dayCell(wi,di));
   });
@@ -510,7 +579,27 @@ function openSheet(wi,di){
   document.getElementById('scrim').classList.add('on');
 }
 function closeSheet(){document.getElementById('scrim').classList.remove('on');renderAll();}
+function closeCtx(){document.getElementById('ctxscrim').classList.remove('on');}
+function openCtx(wi,di){
+  const d=effDay(wi,di);const dt=dayDate(wi,di);const m=document.getElementById('ctxmenu');
+  let html='<div class="ch">'+DOW[di]+' '+fmtShort(dt)+'</div>';
+  if(d.t!=='rest')html+='<button data-a="copy"><span class="dot" style="background:'+COLORS[d.t]+'"></span>Kopier '+shortLabel(d.t)+'</button>';
+  if(clip)html+='<button data-a="paste"><span class="dot" style="background:'+COLORS[clip.t]+'"></span>Lim inn: <span class="sub">'+esc(clipLabel())+'</span></button>';
+  if(clip)html+='<button data-a="pastemulti">Lim inn på flere dager …</button>';
+  html+='<button data-a="open">'+(d.t==='rest'?'Legg til økt …':'Åpne / rediger …')+'</button>';
+  if(d.t!=='rest')html+='<button data-a="del" class="danger">Slett økt</button>';
+  m.innerHTML=html;
+  m.querySelectorAll('button').forEach(b=>{b.onclick=()=>{const a=b.dataset.a;closeCtx();
+    if(a==='copy')copySession(wi,di);
+    else if(a==='paste'){pasteInto(wi,di);renderAll();toast('Limt inn: '+clipLabel());}
+    else if(a==='pastemulti')enterPasteMode();
+    else if(a==='del'){deleteDay(wi,di);renderAll();}
+    else if(a==='open')openSheet(wi,di);
+  };});
+  document.getElementById('ctxscrim').classList.add('on');
+}
 document.getElementById('scrim').onclick=(e)=>{if(e.target.id==='scrim')closeSheet();};
+document.getElementById('ctxscrim').onclick=(e)=>{if(e.target.id==='ctxscrim')closeCtx();};
 
 function commentBlock(id){return `<div class="field"><label>Din kommentar</label><textarea id="cmtBox" placeholder="Hvordan gikk økta? Følelse, vær, justeringer …">${esc(comments[id]||'')}</textarea></div>`;}
 function bindComment(id){const t=document.getElementById('cmtBox');if(!t)return;t.addEventListener('input',()=>{const v=t.value.trim();if(v)comments[id]=v;else delete comments[id];persist();});}
@@ -532,11 +621,17 @@ function renderDetailSheet(wi,di,d){
       <button class="resetbtn" id="editBtn">Endre økt</button>
       <button class="delbtn" id="delBtn">Slett økt</button>
     </div>
+    <div class="linkbtns" style="margin-top:10px">
+      <button class="resetbtn" id="copyBtn">Kopier økt</button>
+      ${clip?'<button class="resetbtn" id="pasteBtn">Lim inn kopiert</button>':''}
+    </div>
     ${(overrides[id]&&baseHad)?'<div class="linkbtns" style="margin-top:10px"><button class="resetbtn" id="resetBtn">Tilbakestill original</button></div>':''}`;
   bindComment(id);
   document.getElementById('dbtn').onclick=()=>{toggle(id);closeSheet();};
   document.getElementById('editBtn').onclick=()=>renderFormSheet(wi,di,true);
   document.getElementById('delBtn').onclick=()=>{deleteDay(wi,di);closeSheet();};
+  document.getElementById('copyBtn').onclick=()=>{copySession(wi,di);closeSheet();};
+  const pb=document.getElementById('pasteBtn');if(pb)pb.onclick=()=>{pasteInto(wi,di);toast('Limt inn: '+clipLabel());closeSheet();};
   const rb=document.getElementById('resetBtn');if(rb)rb.onclick=()=>{delete overrides[id];persist();closeSheet();};
 }
 
@@ -549,6 +644,7 @@ function renderFormSheet(wi,di,isEdit){
   document.getElementById('sheet').innerHTML=`<div class="grab"></div>
     <div class="dtag">Uke ${w.n} · ${DOW[di]} ${fmtShort(dt)}</div>
     <h2>${isEdit?'Endre økt':'Legg til økt'}</h2>
+    ${(!isEdit&&clip)?'<button class="resetbtn" id="pasteBtn2" style="width:100%;margin-top:4px">Lim inn kopiert: '+esc(clipLabel())+'</button>':''}
     <div class="field"><label>Type økt</label><div class="typegrid" id="typeGrid">${btns}</div></div>
     <div class="field"><label>Varighet / innhold</label><input id="addDur" placeholder="f.eks. 8K eller 5×5 min, 1 min pause" value="${isEdit?esc(base.d):''}"></div>
     ${commentBlock(id)}
@@ -564,6 +660,7 @@ function renderFormSheet(wi,di,isEdit){
     if(fixed)o.fixed=fixed;
     overrides[id]=o;persist();closeSheet();
   };
+  const p2=document.getElementById('pasteBtn2');if(p2)p2.onclick=()=>{pasteInto(wi,di);toast('Limt inn: '+clipLabel());closeSheet();};
   const db=document.getElementById('delBtn2');if(db)db.onclick=()=>{deleteDay(wi,di);closeSheet();};
   const rb=document.getElementById('restoreBtn');if(rb)rb.onclick=()=>{delete overrides[id];persist();closeSheet();};
 }
@@ -612,9 +709,11 @@ document.getElementById('personName').addEventListener('input',()=>{PERSON=docum
 document.getElementById('raceName').addEventListener('input',()=>{RACE=document.getElementById('raceName').value;persist();applyNames();renderMonth(selMonth);buildToday();});
 document.getElementById('goalInput').addEventListener('input',()=>{GOAL=document.getElementById('goalInput').value;persist();renderMonth(selMonth);buildToday();updateHeader();});
 document.getElementById('progSelect').addEventListener('change',e=>switchProgram(e.target.value));
-document.getElementById('newProgBtn').onclick=()=>createProgram();
-document.getElementById('progName').addEventListener('input',()=>{PROGNAME=document.getElementById('progName').value;const it=REG.list.find(x=>x.id===activeId);if(it)it.name=PROGNAME||'Program';const sel=document.getElementById('progSelect');if(sel)[...sel.options].forEach(o=>{if(o.value===activeId)o.textContent=PROGNAME;});persist();});
+document.getElementById('newProgBtn').onclick=()=>newProgramMenu();
+document.getElementById('clearProgBtn').onclick=()=>clearProgram();
+document.getElementById('progName').addEventListener('input',()=>{PROGNAME=document.getElementById('progName').value;const it=REG.list.find(x=>x.id===activeId);if(it)it.name=PROGNAME||'Program';const sel=document.getElementById('progSelect');if(sel)[...sel.options].forEach(o=>{if(o.value===activeId)o.textContent=PROGNAME;});applyNames();persist();});
 document.getElementById('delProgBtn').onclick=()=>deleteProgram();
+document.getElementById('pastebarDone').onclick=()=>exitPasteMode();
 
 document.getElementById('tempoBar').onclick=()=>{document.querySelector('.nav button[data-v="calc"]').click();};
 document.querySelectorAll('.nav button').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+b.dataset.v).classList.add('on');window.scrollTo(0,0);};});
