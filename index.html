@@ -220,7 +220,7 @@
   <div class="view on" id="view-plan">
     <div class="tempobar" id="tempoBar">
       <svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
-      <span>Tempo regnet fra 10K-tid <b id="tempoBarVal">55:00</b></span>
+      <span>Tempo regnet fra <b id="tempoBarVal">10K-tid 52:00</b></span>
       <span class="edit">Endre</span>
     </div>
     <div class="today" id="todayCard"></div>
@@ -481,7 +481,7 @@ function weeksBetween(startISO,raceDateObj){const a=new Date(startISO+'T00:00:00
 function buildWeeks(){WEEKS=[];for(let i=0;i<NWEEKS;i++){let days;if(i<TEMPLATE.length){days=TEMPLATE[i].days.map(d=>d.t==='race'?{t:'rest'}:d);}else{days=[R,R,R,R,R,R,R];}WEEKS.push({n:i+1,taper:i===NWEEKS-1,days});}const last=WEEKS[NWEEKS-1];if(last)last.days[6]=S('race','21,1 km');}
 function computeCurrent(){buildWeeks();curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
 
-function updateTempoBar(){document.getElementById('tempoBarVal').textContent=distShort(DIST)+' '+fmtTime(DTIME);}
+function updateTempoBar(){document.getElementById('tempoBarVal').textContent=distShort(DIST)+'-tid '+fmtTime(DTIME);}
 
 function buildToday(){
   const el=document.getElementById('todayCard');
