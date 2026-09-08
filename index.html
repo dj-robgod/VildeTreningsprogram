@@ -368,6 +368,7 @@ function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
 function riegelTo10k(t,d){return t*Math.pow(10/d,1.06);}
 function distShort(d){return Math.abs(d-5)<0.5?'5K':Math.abs(d-10)<0.5?'10K':Math.abs(d-21.0975)<0.6?'HM':'Maraton';}
+function distLong(d){return Math.abs(d-5)<0.5?'5km':Math.abs(d-10)<0.5?'10km':Math.abs(d-21.0975)<0.6?'Halvmaraton':'Maraton';}
 function paceStr(d){
   if(d.t==='race')return 'Måltid: '+GOAL;
   if(d.fixed)return d.fixed;
@@ -481,7 +482,7 @@ function weeksBetween(startISO,raceDateObj){const a=new Date(startISO+'T00:00:00
 function buildWeeks(){WEEKS=[];for(let i=0;i<NWEEKS;i++){let days;if(i<TEMPLATE.length){days=TEMPLATE[i].days.map(d=>d.t==='race'?{t:'rest'}:d);}else{days=[R,R,R,R,R,R,R];}WEEKS.push({n:i+1,taper:i===NWEEKS-1,days});}const last=WEEKS[NWEEKS-1];if(last)last.days[6]=S('race','21,1 km');}
 function computeCurrent(){buildWeeks();curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
 
-function updateTempoBar(){document.getElementById('tempoBarVal').textContent=distShort(DIST)+'-tid '+fmtTime(DTIME);}
+function updateTempoBar(){document.getElementById('tempoBarVal').textContent=distLong(DIST)+'-tid '+fmtTime(DTIME);}
 
 function buildToday(){
   const el=document.getElementById('todayCard');
