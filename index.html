@@ -108,6 +108,9 @@
 .race .ttl{color:var(--e-race)}
 .calc-in{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:18px}
 .calc-in .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+.distsel{display:flex;gap:6px;margin-bottom:14px}
+.distsel button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 4px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.distsel button.sel{border-color:var(--pine);background:var(--pine-soft);color:var(--pine)}
 .timepick{display:flex;align-items:flex-end;gap:8px;justify-content:center}
 .tcol{text-align:center}
 .tcol input{width:64px;font-family:'Oswald';font-size:34px;font-weight:600;text-align:center;border:none;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);padding:2px 0;-moz-appearance:textfield}
@@ -228,9 +231,10 @@
   </div>
 
   <div class="view" id="view-calc">
-    <div class="secttl">Din 10K-tid</div>
+    <div class="secttl">Din tid</div>
     <div class="calc-in">
-      <div class="lab">Legg inn nåværende 10K-tid – hele programmet justeres</div>
+      <div class="lab">Velg distanse og legg inn tiden din – hele planen justeres</div>
+      <div class="distsel" id="distSel"><button data-d="5">5K</button><button data-d="10" class="sel">10K</button><button data-d="21.0975">HM</button><button data-d="42.195">Maraton</button></div>
       <div class="timepick">
         <div class="tcol"><input id="ih" type="number" min="0" max="9" value="0"><div class="u">timer</div></div>
         <div class="colon">:</div>
@@ -239,7 +243,7 @@
         <div class="tcol"><input id="is" type="number" min="0" max="59" value="0"><div class="u">sek</div></div>
       </div>
       <div class="saverow" id="saveRow"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Lagret – planen er oppdatert</div>
-      <div class="warnrow" id="warnRow">Sjekk 10K-tiden – bruk en verdi mellom 20:00 og 2:00:00</div>
+      <div class="warnrow" id="warnRow">Sjekk tiden – tempoet blir urealistisk</div>
       <div class="calc-note">Soner skaleres fra 10K-farten · konkurransetider via Riegel</div>
     </div>
     <div class="secttl">Treningssoner</div>
@@ -336,9 +340,8 @@ const GUIDE=[
 ];
 const TIPS=[
  'Oppvarming og nedjogg gjøres før og etter alle intervaller.',
- 'Tempoene under skaleres fra 10K-tiden din – legg den inn i Tempo-fanen, så justeres hele planen.',
+ 'Tempoene under skaleres fra tiden du legger inn i Tempo-fanen (5K, 10K, HM eller maraton), så justeres hele planen.',
  'Trykk på en hviledag for å legge til en egen økt, eller på en økt for å slette den eller skrive en kommentar.',
- 'Intervallene er programmert likt (4×4, 6×6 min osv.) for at progresjonen skal være målbar.',
  'Stiger formen, justerer vi opp: raskere fart, flere drag eller kortere pause. Blir det for tøft, går vi motsatt vei.',
  'Tapering siste uke: behold intensiteten, men reduser volumet før løpet.'
 ];
@@ -363,6 +366,8 @@ function applyNames(){const p=(PERSON||'').trim()||'Løper';const r=(RACE||'').t
 function setNameInputs(){const a=document.getElementById('personName'),b=document.getElementById('raceName');if(a)a.value=PERSON;if(b)b.value=RACE;}
 function factor(){const spd=10/(T10K/3600);return spd/REF10K;}
 function tenKLabel(){return fmtTime(T10K);}
+function riegelTo10k(t,d){return t*Math.pow(10/d,1.06);}
+function distShort(d){return Math.abs(d-5)<0.5?'5K':Math.abs(d-10)<0.5?'10K':Math.abs(d-21.0975)<0.6?'HM':'Maraton';}
 function paceStr(d){
   if(d.t==='race')return 'Måltid: '+GOAL;
   if(d.fixed)return d.fixed;
@@ -376,6 +381,7 @@ function paceStr(d){
 // ---- state ----
 let done={w1d2:1,w1d4:1,w1d6:1,w2d0:1,w2d3:1,w2d5:1,w3d1:1,w3d3:1,w3d5:1,w4d1:1,w4d3:1,w4d4:1,w4d6:1,w5d1:1,w5d3:1,w5d6:1,w7d1:1,w7d3:1,w7d5:1,w8d0:1,w8d2:1,w9d3:1,w9d5:1,w10d0:1,w10d1:1,w10d4:1,w10d6:1,w11d0:1,w11d3:1,w11d6:1},overrides={},comments={};
 let GOAL='2:05',PROGNAME='Program 1',activeId=null,REG={active:null,list:[]},clip=null,clipWeek=null,pasteMode=false;
+let DIST=10,DTIME=52*60;
 function baseDay(wi,di){return WEEKS[wi].days[di];}
 function effDay(wi,di){const id=sid(WEEKS[wi].n,di);const o=overrides[id];if(o){if(o.del)return {t:'rest'};return o;}return baseDay(wi,di);}
 
@@ -395,8 +401,8 @@ const Store=(()=>{
 })();
 async function getJSON(k){try{const v=await Store.get(k);return v?JSON.parse(v):null;}catch(e){return null;}}
 async function setJSON(k,v){try{await Store.set(k,JSON.stringify(v));}catch(e){}}
-function collectProgram(){return {name:PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,nweeks:NWEEKS,done:done,overrides:overrides,comments:comments};}
-function applyProgram(o){o=o||{};PERSON=o.person!=null?o.person:'Vilde Thug';RACE=o.race!=null?o.race:'Trondheim Maraton';GOAL=o.goal!=null?o.goal:'2:05';START=o.start||'2026-06-22';T10K=o.t10k!=null?o.t10k:52*60;done=o.done||{};overrides=o.overrides||{};comments=o.comments||{};NWEEKS=(o.nweeks&&o.nweeks>=1)?o.nweeks:11;PROGNAME=o.name||'Program';}
+function collectProgram(){return {name:PROGNAME,person:PERSON,race:RACE,goal:GOAL,start:START,t10k:T10K,dist:DIST,distTime:DTIME,nweeks:NWEEKS,done:done,overrides:overrides,comments:comments};}
+function applyProgram(o){o=o||{};PERSON=o.person!=null?o.person:'Vilde Thug';RACE=o.race!=null?o.race:'Trondheim Maraton';GOAL=o.goal!=null?o.goal:'2:05';START=o.start||'2026-06-22';DIST=o.dist||10;DTIME=(o.distTime!=null)?o.distTime:(o.t10k!=null?o.t10k:52*60);T10K=riegelTo10k(DTIME,DIST);done=o.done||{};overrides=o.overrides||{};comments=o.comments||{};NWEEKS=(o.nweeks&&o.nweeks>=1)?o.nweeks:11;PROGNAME=o.name||'Program';}
 async function persist(){if(!activeId)return;await setJSON('prog:'+activeId,collectProgram());const it=REG.list.find(x=>x.id===activeId);if(it&&it.name!==PROGNAME){it.name=PROGNAME;await setJSON('programs',REG);}}
 function refreshAll(){computeCurrent();buildProgramSelect();setInputsFromState();setDateInputs();setNameInputs();setGoalInput();buildMonthNav();renderAll();}
 function buildProgramSelect(){const sel=document.getElementById('progSelect');if(!sel)return;sel.innerHTML='';REG.list.forEach(pp=>{const o=document.createElement('option');o.value=pp.id;o.textContent=pp.name;if(pp.id===activeId)o.selected=true;sel.appendChild(o);});const pn=document.getElementById('progName');if(pn)pn.value=PROGNAME;const del=document.getElementById('delProgBtn');if(del)del.style.display=REG.list.length>1?'':'none';}
@@ -475,7 +481,7 @@ function weeksBetween(startISO,raceDateObj){const a=new Date(startISO+'T00:00:00
 function buildWeeks(){WEEKS=[];for(let i=0;i<NWEEKS;i++){let days;if(i<TEMPLATE.length){days=TEMPLATE[i].days.map(d=>d.t==='race'?{t:'rest'}:d);}else{days=[R,R,R,R,R,R,R];}WEEKS.push({n:i+1,taper:i===NWEEKS-1,days});}const last=WEEKS[NWEEKS-1];if(last)last.days[6]=S('race','21,1 km');}
 function computeCurrent(){buildWeeks();curWeek=0;curDayIdx=-1;const tM=todayMid();WEEKS.forEach((w,wi)=>w.days.forEach((d,di)=>{if(dayDate(wi,di).getTime()===tM.getTime()){curWeek=wi;curDayIdx=di;}}));if(curDayIdx===-1){const first=dayDate(0,0),last=dayDate(WEEKS.length-1,6);if(tM<first)curWeek=0;else if(tM>last)curWeek=WEEKS.length-1;}computeMonths();selMonth=monthOfWeek(curWeek);}
 
-function updateTempoBar(){document.getElementById('tempoBarVal').textContent=tenKLabel();}
+function updateTempoBar(){document.getElementById('tempoBarVal').textContent=distShort(DIST)+' '+fmtTime(DTIME);}
 
 function buildToday(){
   const el=document.getElementById('todayCard');
@@ -505,6 +511,7 @@ function buildMonthNav(){
 function highlightNav(){[...document.getElementById('weeknav').children].forEach((c,i)=>c.classList.toggle('sel',i===selMonth));}
 
 function shortLabel(t){return ({rest:'Hvile',rolig:'Rolig',mod:'Moderat',long:'Langtur',thr:'Terskel',vo2:'VO\u2082max',race:'Løp'})[t]||t;}
+function calShort(t){return ({rolig:'R',mod:'M',long:'L',thr:'T',vo2:'O\u2082',race:'RACE'})[t]||t;}
 function compactDur(x){return (x||'').replace(/(\d+)\s*min\s*pause/gi,'$1mp').replace(/\s*min\b/gi,'min').replace(/\s*sek\b/gi,'s');}
 function toast(msg){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),1700);}
 function clipLabel(){return clip?shortLabel(clip.t)+(clip.d?' · '+compactDur(clip.d):''):'';}
@@ -539,7 +546,7 @@ function dayCell(wi,di){
   cell.style.borderTopColor=col;
   let body;
   if(d.t==='rest'){body=`<div class="cs rest">Hvile</div>`;}
-  else{body=`<div class="cs"><span class="dot" style="background:${col}"></span><span class="lab">${shortLabel(d.t)}${d.custom?' *':''}</span></div>${d.d?`<div class="cd">${esc(compactDur(d.d))}</div>`:''}`;}
+  else{body=`<div class="cs"><span class="dot" style="background:${col}"></span><span class="lab">${calShort(d.t)}${d.custom?' *':''}</span></div>${d.d?`<div class="cd">${esc(compactDur(d.d))}</div>`:''}`;}
   cell.innerHTML=`<div class="cdate">${dt.getDate()}.</div>${body}${isDone?'<div class="ck"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div>':''}${cmt?`<div class="cnote">${NOTE}</div>`:''}`;
   let lpFired=false,lpTimer=null;
   cell.onclick=()=>{if(lpFired){lpFired=false;return;}if(pasteMode&&clip){pasteInto(wi,di);renderAll();toast('Limt inn: '+clipLabel());return;}openSheet(wi,di);};
@@ -680,7 +687,7 @@ function renderGuide(){
 
 // ---- calculator ----
 const ZONES=[{z:'rolig',name:'Rolig',sub:'Pratetempo',lo:8.1,hi:8.6},{z:'mod',name:'Moderat',sub:'Litt tyngre',lo:9.5,hi:10.0},{z:'thr',name:'Terskel',sub:'Litt tungt',lo:10.6,hi:11.1},{z:'vo2',name:'VO₂max',sub:'Veldig tungt',lo:12.1,hi:12.6}];
-const RACES=[{name:'Maraton',sub:'42,2 km',d:42.195},{name:'Halvmaraton',sub:'21,1 km',d:21.0975,star:true},{name:'10K',sub:'Din input',d:10},{name:'5K',sub:'5 km',d:5},{name:'3K',sub:'3 km',d:3}];
+const RACES=[{name:'Maraton',sub:'42,2 km',d:42.195},{name:'Halvmaraton',sub:'21,1 km',d:21.0975,star:true},{name:'10K',sub:'10 km',d:10},{name:'5K',sub:'5 km',d:5},{name:'3K',sub:'3 km',d:3}];
 function renderCalc(){
   const f=factor();
   const zo=document.getElementById('zoneOut');zo.innerHTML='';
@@ -691,18 +698,19 @@ function renderCalc(){
     r.innerHTML=`<div class="rail" style="background:${rc.star?'var(--e-race)':'var(--pine)'}"></div><div class="znm"><div class="a">${rc.name}</div><div class="b">${rc.sub} · ${num(v)} km/t · ${paceOf(v)} /km</div></div><div class="zv"><div class="big tnum">${fmtTime(T)}</div><div class="small">sluttid</div></div>`;ro.appendChild(r);});
 }
 
-function setInputsFromState(){const h=Math.floor(T10K/3600),m=Math.floor(T10K%3600/60),s=T10K%60;document.getElementById('ih').value=h;document.getElementById('im').value=m;document.getElementById('is').value=s;}
+function setInputsFromState(){const h=Math.floor(DTIME/3600),m=Math.floor(DTIME%3600/60),s=DTIME%60;document.getElementById('ih').value=h;document.getElementById('im').value=m;document.getElementById('is').value=s;const ds=document.getElementById('distSel');if(ds)[...ds.querySelectorAll('button')].forEach(b=>b.classList.toggle('sel',Math.abs(parseFloat(b.dataset.d)-DIST)<0.6));}
 let saveTimer=null;
 function onInput(){
   const h=+document.getElementById('ih').value||0,m=+document.getElementById('im').value||0,s=+document.getElementById('is').value||0;
-  const t=h*3600+m*60+s;
+  const t=h*3600+m*60+s;const eq=riegelTo10k(t,DIST);
   const warn=document.getElementById('warnRow');
-  if(t<1200||t>7200){warn.classList.add('show');document.getElementById('saveRow').classList.remove('show');return;}
-  warn.classList.remove('show');T10K=t;
+  if(t<=0||eq<1200||eq>6600){warn.classList.add('show');document.getElementById('saveRow').classList.remove('show');return;}
+  warn.classList.remove('show');DTIME=t;T10K=eq;
   renderCalc();renderGuide();buildToday();renderMonth(selMonth);updateTempoBar();persist();
   const sr=document.getElementById('saveRow');sr.classList.add('show');clearTimeout(saveTimer);saveTimer=setTimeout(()=>sr.classList.remove('show'),1600);
 }
 ['ih','im','is'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
+document.querySelectorAll('#distSel button').forEach(b=>{b.onclick=()=>{DIST=parseFloat(b.dataset.d);document.querySelectorAll('#distSel button').forEach(x=>x.classList.toggle('sel',x===b));onInput();};});
 document.getElementById('startDate').addEventListener('change',()=>{const v=document.getElementById('startDate').value;if(!v)return;const ns=toISO(snapToMonday(new Date(v+'T00:00:00')));const raceSun=dayDate(NWEEKS-1,6);const nw=weeksBetween(ns,raceSun);START=ns;if(nw>=1)NWEEKS=Math.min(52,nw);afterDateChange();});
 document.getElementById('raceDate').addEventListener('change',()=>{const v=document.getElementById('raceDate').value;if(!v)return;const rs=addDays(toISO(snapToMonday(new Date(v+'T00:00:00'))),6);const nw=weeksBetween(START,rs);if(nw>=1)NWEEKS=Math.min(52,nw);afterDateChange();});
 document.getElementById('personName').addEventListener('input',()=>{PERSON=document.getElementById('personName').value;persist();applyNames();});
